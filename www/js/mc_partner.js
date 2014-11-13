@@ -563,6 +563,7 @@
           $("#card_reader2.student_name_box").hide();
         }
 
+/* POC remove Yes, No, Review buttons
 
         //
         //! 4. A Listener can mark an answer as correct
@@ -589,7 +590,7 @@
           app.initReview();
 
         });
-
+*/
         //
         //! . A Listener can get clarification on a stimuli
         //
@@ -611,7 +612,10 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         this.cardReader[this.readerTurn].nextStimulus();
-      },
+      }
+
+/* POC remove teacsherReview
+      ,
 
     /////////////////////////////////////////////
     //
@@ -619,11 +623,12 @@
     //
     /////////////////////////////////////////////
     initReview: function () {
-      /* moved to init reader in TeacherReview so it can be called from report
-      $("#container").html(review_template);
-      */
+      // moved to init reader in TeacherReview so it can be called from report
+      // $("#container").html(review_template);
+      //
       this.review = new teacherReview(this.cardListener, this.cardReader);
     }
+*/
 
   };
 //
@@ -988,7 +993,7 @@ function reader(user) {
     this.nextStimulus();
 
   }
-
+/* POC remove teacherReview
   function teacherReview(cardListener, cardReader) {
     this.cardListener = cardListener;
     this.cardReader = cardReader;
@@ -1157,13 +1162,13 @@ function reader(user) {
         // copy the results of the review into localStorage
         app.updateLocalScores();
 
-        /*
-        ** start the update chain by attempting the download the freshest data
-        ** the chain will either succeed with the download and following upload of new scores
-        ** and then clear any pending updates
-        ** or will fail leaving pending updates for the next successfull update chain
-        ** in either case the start screen will be displayed
-        */
+        //
+        // start the update chain by attempting the download the freshest data
+        // the chain will either succeed with the download and following upload of new scores
+        // and then clear any pending updates
+        // or will fail leaving pending updates for the next successfull update chain
+        // in either case the start screen will be displayed
+        //
 
         // app.updatePartnerStationScore(reviewUser, false);
         app.getStudentList(app.teacher.id, false);
@@ -1264,7 +1269,8 @@ function reader(user) {
           }
       };
 
-      /* restoreReview to be called from Report to restore the view and state of the review */
+      // restoreReview to be called from Report to restore the view and state of the review 
+
       this.restoreReview = function (){
         $("#container").html(review_template);
         this.initReader(this.currentReader);
@@ -1379,3 +1385,4 @@ function reader(user) {
       }
 
     }
+*/
