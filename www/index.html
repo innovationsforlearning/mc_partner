@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+  
+  <link href="css/jquery-ui.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/mc_partner.css" />
+  <title>Partner Station</title>
+</head>
+
+<body>
+<div id="container"></div>
+<div id="dialog-message" title="Download complete">
+  <div id="dialog_text"></div>
+</div>
+<div id="login_template" class="template">
+  <div class="container" id="login_container">
+    <form id="login">
+      <input type="text" placeholder="teacher username" id="username">
+      <input type="password" placeholder="teacher password" id="pwd">
+      <input id="login_button" type="submit" value="Sync">
+      <p>Your username and/or password were not recognized. Please try again.</p>
+    </form>
+    <div id="header">
+      <select class="select_label" id="card_listener_select">
+        <option value="Listener">Card Listener</option>
+      </select>
+      <select class="select_label" id="card_reader1_select">
+        <option value="Reader1">Card Reader</option>
+      </select>
+      <select class="select_label" id="card_reader2_select">
+        <option value="Reader2">Card Reader</option>
+      </select>
+      <div id="go_button">
+     </div>
+   </div>
+   <div id="splash"></div>
+  </div>
+</div>
+<div id="gameboard_template" class="template">
+  <div class="container" id="game_container">
+    <!--<div class="game"> -->
+      <div id="game_board">
+        <div id="game_header">
+          <div id="help_button">
+          </div>
+          <div class="student_name_box" style="display:none" id="card_listener">
+            <div class="student_name_label">Card Listener</div><br>
+            <div class="student_role_label">Card Listener</div>
+          </div>
+          <div class="student_name_box" id="card_reader1">
+            <div class="student_name_label">Card Reader</div><br>
+            <div class="student_role_label">Card Reader</div>
+          </div>
+          <div class="student_name_box" id="card_reader2">
+            <div class="student_name_label">Card Reader</div><br>
+            <div class="student_role_label">Card Reader</div>
+          </div>
+        </div>
+        <div id="stimulus">
+          <div class="stage" id="stagex"></div>
+        </div>
+        <div id="game_footer">
+          <div id="answer" style="display:none" > <span id="yes_button"></span>
+           <span id="no_button"></span>
+          </div>
+        </div>
+        <div id="score"><div id="score_label">00</div></div>
+        <div id="review_button style="display:none" "></div>
+     </div>
+    </div>
+ </div>
+<!--</div>-->
+<!-- gameboard_template -->
+<div id="review_template" class="template">
+  <div class="container" id="review_container">
+    <div class="review">
+      <div class="review_nav">
+        <div id="card_reader_label">Card Reader:</div>
+        <select id="card_reader_select"></select>
+        <div class="review_nav_button" id="review_exit_button" />Back to Start Screen</div>
+        <div class="review_nav_button" id="review_report_button" />Tap To Report Screen</div>
+      </div>
+      <div id="review_dashboard">
+        <div id="correct_word_list">
+          <textarea readonly></textarea>
+        </div>
+        <div id="controls">
+          <div>
+            <div class="review_label">Review 1:</div>
+            <div class="review_box" id="yes_1">Yes</div>
+            <div class="review_box" id="no_1">No</div>
+          </div>
+          <div>
+            <div class="review_label">Review 2:</div>
+            <div class="review_box" id="yes_2">Yes</div>
+            <div class="review_box" id="no_2">No</div>
+          </div>
+          <div id="review_score">
+            <div>
+              <div class="review_label"></div>
+              <div class="review_column_header">Current Score</div>
+              <div class="review_column_header">Possible points for round</div>
+              <div class="review_column_header">New Score</div>
+            </div>
+            <div>
+              <div class="review_label" id="reader">Student 1:</div>
+              <div class="review_box" id="current_score_reader">98</div>
+              <div class="review_box" id="ppfr_reader">15</div>
+              <div class="review_box" id="new_score_reader">???</div>
+            </div>
+            <div>
+              <div class="review_label" id="listener">Student 2:</div>
+              <div class="review_box" id="current_score_listener">98</div>
+              <div class="review_box" id="ppfr_listener">15</div>
+              <div class="review_box" id="new_score_listener">???</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- review_template -->
+<div id="report_template" class="template">
+  <div class="container" id="report_container">
+    <div class="review">
+      <div class="review_nav">
+        <div class="review_nav_button" id="report_exit_button" />Back to Start Screen</div>
+        <div class="review_nav_button" id="report_scoring_button" />Back to Scoring Screen</div>
+        <h1>Report</h1>
+      </div>
+      <table id="table_head">
+          <tr id="report_head">
+          <th class="name_col" id="student_name">Student</th>
+          <th class="score_col" id="student_score">Score</th>
+        </tr>
+      </table>
+      <div id="table_container">
+      <table id="report_tab">
+      <tbody></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/jquery-2.1.1.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/mc_partner.js"></script>
+<!-- comment out below to debug on browser -->
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="media.js"></script>
+<!-- comment out above to debug on browser -->
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+  cordova_app.initialize();
+</script>
+</body>
+
+</html>
