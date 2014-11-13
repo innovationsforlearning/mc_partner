@@ -667,6 +667,9 @@ function reader(user) {
 
     this.nextStimulus = function () {
       doStage[stage].display();
+      $("div.stage").click(function (){
+        app.cardReader[app.readerTurn].doIncorrect();
+      });
     };
 
     this.doCorrect = function () {
