@@ -34,6 +34,7 @@
 
   var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
 
+  var stimReveal = "<div id='reveal'><div row='0'><span col='0'>Word0</span><span col='1'>Word1</span></div><div row='1'><span col='0'>Word2</span><span col='1'>Word3</span></div></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -648,16 +649,19 @@ function reader(user) {
     var doStage = [{
       init: initStage1,
       display: displayStage1,
+      reveal: revealStage1,
       incorrect: incorrectStage1,
       stim: getStimStage1
     }, {
       init: initStage2,
       display: displayStage2,
+      reveal: revealStage2,
       incorrect: incorrectStage2,
       stim: getStimStage2
     }, {
       init: initStage3,
       display: displayStage3,
+      reveal: revealStage3,
       incorrect: incorrectStage3,
       stim: getStimStage3
     }];
@@ -668,7 +672,8 @@ function reader(user) {
     this.nextStimulus = function () {
       doStage[stage].display();
       $("div.stage").click(function (){
-        app.cardReader[app.readerTurn].doIncorrect();
+        doStage[stage].reveal();
+        //app.cardReader[app.readerTurn].reveal();
       });
     };
 
@@ -864,6 +869,21 @@ function reader(user) {
           $("#stimulus").html(stimHTMLStage3);
           $("#stimulus #word").text(stimuli[0].word);
 
+        }
+
+        function revealStage1() {
+          $("#stimulus").html(stimHTMLStage3);
+          //$("#stimulus #word").text(stimuli[0].word);
+        }
+
+        function revealStage2() {
+          $("#stimulus").html(stimHTMLStage3);
+          //$("#stimulus #word").text(stimuli[0].word);
+        }
+
+        function revealStage3() {
+          $("#stimulus").html(stimReveal);
+          //$("#stimulus #word").text(stimuli[0].word);
         }
 
         function getStimStage1() {

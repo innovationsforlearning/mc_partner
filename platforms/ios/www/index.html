@@ -9,7 +9,7 @@
   <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
   
   <link href="css/jquery-ui.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="css/partnerstation.css" />
+  <link rel="stylesheet" type="text/css" href="css/mc_partner.css" />
   <title>Partner Station</title>
 </head>
 
@@ -49,7 +49,7 @@
         <div id="game_header">
           <div id="help_button">
           </div>
-          <div class="student_name_box" id="card_listener">
+          <div class="student_name_box" style="display:none" id="card_listener">
             <div class="student_name_label">Card Listener</div><br>
             <div class="student_role_label">Card Listener</div>
           </div>
@@ -66,12 +66,12 @@
           <div class="stage" id="stagex"></div>
         </div>
         <div id="game_footer">
-          <div id="answer"> <span id="yes_button"></span>
+          <div id="answer" style="display:none" > <span id="yes_button"></span>
            <span id="no_button"></span>
           </div>
         </div>
         <div id="score"><div id="score_label">00</div></div>
-        <div id="review_button"></div>
+        <div id="review_button style="display:none" "></div>
      </div>
     </div>
  </div>
@@ -152,7 +152,7 @@
 
 <script src="js/jquery-2.1.1.js"></script>
 <script src="js/jquery-ui.min.js"></script>
-<script src="js/partnerstation.js"></script>
+<script src="js/mc_partner.js"></script>
 <!-- comment out below to debug on browser -->
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="media.js"></script>
