@@ -83,15 +83,15 @@
       studentid: "stage1",
       partnerscore: "10"
     }, {
-      studentName: "Stage 2 Student",
-      readingstage: "2",
-      studentid: "stage2",
-      partnerscore: "20"
-    }, {
-      studentName: "Stage 3 Student",
+      studentName: "Lion",
       readingstage: "3",
-      studentid: "stage3",
-      partnerscore: "30"
+      studentid: "lion",
+      partnerscore: "0"
+    }, {
+      studentName: "Tiger",
+      readingstage: "3",
+      studentid: "tiger",
+      partnerscore: "0"
     }],
 
     cardReader: [],
@@ -530,8 +530,8 @@
 
       return {
         success: true,
-        listener: 1,
-        reader: [2,3]
+        listener: 0,
+        reader: [1,2]
       };
     },
 
