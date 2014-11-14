@@ -903,7 +903,18 @@ function reader(user) {
         }
 
         function revealStage3() {
-          $("#stimulus").html(stimReveal);
+          var words=[];
+          for(var i=0;i<3;i++){
+            words.push(stimuli[0].incorrect[i])
+          }
+          var correctIndex=Math.floor(Math.random()*3);
+          words.splice(correctIndex,0,stimuli[0].word);
+          var stim=stimReveal;
+          for(var i=0;i<4;i++){
+            stim = stim.replace("Word"+i, words[i]);            
+          }
+
+          $("#stimulus").html(stim);
           for(var r=0;r<4;r++){
 
             $("#stim"+r).click(function (){
