@@ -608,7 +608,14 @@
 
       checkAnswer: function (stim) {
           console.log("checkAnswer: "+stim);
-          app.nextReader();
+          if (app.cardReader[app.readerTurn].isStimCorrect(stim)){
+            app.cardReader[app.readerTurn].doCorrect();
+            app.nextReader();
+          }else{
+            app.cardReader[app.readerTurn].doIncorrect();
+          }
+
+
       },
 
       incorrect_words: function (target, source){
@@ -693,6 +700,10 @@ function reader(user) {
         //app.cardReader[app.readerTurn].reveal();
       });
     };
+
+    this.isStimCorrect = function (stim){
+      return stim === doStage[stage].stim();
+    }
 
     this.doCorrect = function () {
         //
@@ -918,7 +929,7 @@ function reader(user) {
           for(var r=0;r<4;r++){
 
             $("#stim"+r).click(function (){
-              app.checkAnswer(this.id);
+              app.checkAnswer(this.innerText);
             });
 
           }

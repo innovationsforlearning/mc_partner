@@ -34,6 +34,7 @@
 
   var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
 
+  var stimReveal = "<div id='reveal'><div><span id='stim0'>Word0</span><span id='stim1'>Word1</span></div><div><span id='stim2'>Word2</span><span id='stim3'>Word3</span></div></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -605,6 +606,23 @@
 
       },
 
+      checkAnswer: function (stim) {
+          console.log("checkAnswer: "+stim);
+          app.nextReader();
+      },
+
+      incorrect_words: function (target, source){
+        var words = source.slice();
+        var a = words.indexOf(target);
+        words.splice(a,1); //remove target word
+        var incorrect = [];
+        for(i=0;i<3;i++){
+          var j=Math.floor(Math.random()*words.length);
+          incorrect.push(words[j]);
+          words.splice(j,1)
+        }
+        return incorrect;
+      },
 
       nextReader: function () {
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
@@ -648,16 +666,19 @@ function reader(user) {
     var doStage = [{
       init: initStage1,
       display: displayStage1,
+      reveal: revealStage1,
       incorrect: incorrectStage1,
       stim: getStimStage1
     }, {
       init: initStage2,
       display: displayStage2,
+      reveal: revealStage2,
       incorrect: incorrectStage2,
       stim: getStimStage2
     }, {
       init: initStage3,
       display: displayStage3,
+      reveal: revealStage3,
       incorrect: incorrectStage3,
       stim: getStimStage3
     }];
@@ -668,7 +689,8 @@ function reader(user) {
     this.nextStimulus = function () {
       doStage[stage].display();
       $("div.stage").click(function (){
-        app.cardReader[app.readerTurn].doIncorrect();
+        doStage[stage].reveal();
+        //app.cardReader[app.readerTurn].reveal();
       });
     };
 
@@ -832,14 +854,18 @@ function reader(user) {
           var stimStage3 = [];
           var i;
           for (i = 0; i < sw.length; i++) {
+            var incorrect = app.incorrect_words(sw[i], sw);
             stimStage3.push({
               word: sw[i],
+              incorrect: incorrect,
               type: "sw"
             });
           }
           for (i = 0; i < or.length; i++) {
+            var incorrect = app.incorrect_words(or[i], or);
             stimStage3.push({
               word: or[i],
+              incorrect: incorrect,
               type: "or"
             });
           }
@@ -864,6 +890,39 @@ function reader(user) {
           $("#stimulus").html(stimHTMLStage3);
           $("#stimulus #word").text(stimuli[0].word);
 
+        }
+
+        function revealStage1() {
+          $("#stimulus").html(stimHTMLStage3);
+          //$("#stimulus #word").text(stimuli[0].word);
+        }
+
+        function revealStage2() {
+          $("#stimulus").html(stimHTMLStage3);
+          //$("#stimulus #word").text(stimuli[0].word);
+        }
+
+        function revealStage3() {
+          var words=[];
+          for(var i=0;i<3;i++){
+            words.push(stimuli[0].incorrect[i])
+          }
+          var correctIndex=Math.floor(Math.random()*3);
+          words.splice(correctIndex,0,stimuli[0].word);
+          var stim=stimReveal;
+          for(var i=0;i<4;i++){
+            stim = stim.replace("Word"+i, words[i]);            
+          }
+
+          $("#stimulus").html(stim);
+          for(var r=0;r<4;r++){
+
+            $("#stim"+r).click(function (){
+              app.checkAnswer(this.id);
+            });
+
+          }
+          //$("#stimulus #word").text(stimuli[0].word);
         }
 
         function getStimStage1() {
