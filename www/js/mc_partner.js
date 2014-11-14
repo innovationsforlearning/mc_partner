@@ -610,7 +610,20 @@
           console.log("checkAnswer: "+stim);
           app.nextReader();
       },
-      
+
+      incorrect_words: function (target, source){
+        var words = source.slice();
+        var a = words.indexOf(target);
+        words.splice(a,1); //remove target word
+        var incorrect = [];
+        for(i=0;i<3;i++){
+          var j=Math.floor(Math.random()*words.length);
+          incorrect.push(words[j]);
+          words.splice(j,1)
+        }
+        return incorrect;
+      },
+
       nextReader: function () {
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
@@ -841,14 +854,18 @@ function reader(user) {
           var stimStage3 = [];
           var i;
           for (i = 0; i < sw.length; i++) {
+            var incorrect = app.incorrect_words(sw[i], sw);
             stimStage3.push({
               word: sw[i],
+              incorrect: incorrect,
               type: "sw"
             });
           }
           for (i = 0; i < or.length; i++) {
+            var incorrect = app.incorrect_words(or[i], or);
             stimStage3.push({
               word: or[i],
+              incorrect: incorrect,
               type: "or"
             });
           }
