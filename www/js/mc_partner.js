@@ -34,7 +34,7 @@
 
   var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
 
-  var stimReveal = "<div id='reveal'><div row='0'><span col='0'>Word0</span><span col='1'>Word1</span></div><div row='1'><span col='0'>Word2</span><span col='1'>Word3</span></div></div>"
+  var stimReveal = "<div id='reveal'><div><span id='stim0'>Word0</span><span id='stim1'>Word1</span></div><div><span id='stim2'>Word2</span><span id='stim3'>Word3</span></div></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -606,7 +606,11 @@
 
       },
 
-
+      checkAnswer: function (stim) {
+          console.log("checkAnswer: "+stim);
+          app.nextReader();
+      },
+      
       nextReader: function () {
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
@@ -883,6 +887,13 @@ function reader(user) {
 
         function revealStage3() {
           $("#stimulus").html(stimReveal);
+          for(var r=0;r<4;r++){
+
+            $("#stim"+r).click(function (){
+              app.checkAnswer(this.id);
+            });
+
+          }
           //$("#stimulus #word").text(stimuli[0].word);
         }
 

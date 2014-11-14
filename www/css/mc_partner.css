@@ -248,7 +248,13 @@ body {
     font-size: 200px;
 
 }
-
+#reveal {
+    font-size: 100px;
+    margin: 2%;
+}
+#reveal span {
+    margin: 10%;
+}
 .stage {
     position: absolute;
     margin-left: auto;
