@@ -924,8 +924,8 @@ function reader(user) {
           for(var i=0;i<4;i++){
             stim = stim.replace("Word"+i, words[i]);            
           }
-
           $("#stimulus").html(stim);
+          $("#reveal #stim"+correctIndex).addClass("correct");
           for(var r=0;r<4;r++){
 
             $("#stim"+r).click(function (){
@@ -967,8 +967,9 @@ function reader(user) {
           }
           // highlight and say the word and then continue to split the word
           doStimSound(doStage[stage].stim());
-          $("#stage3 #word").animate({
-            "font-size": "300px",
+          //$("#stage3 #word").animate({
+          $("#reveal .correct").animate({
+            "font-size": "200px",
             "bottom": "-10px"
           }, "slow", function () {
            setTimeout(
