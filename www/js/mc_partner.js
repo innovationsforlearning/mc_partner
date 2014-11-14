@@ -989,15 +989,15 @@ function reader(user) {
     //
     this.incorrectStage3onset = function () {
       // split the onset and rime, highlight the onset and pronounce it
-      $("#stimulus").html(stimHTMLStage3Incorrect);
+      $("#reveal .correct").html(stimHTMLStage3Incorrect);
       var or = splitOR(stimuli[0].word);
-      $("#stimulus #onset").text(or.onset);
-      $("#stimulus #rime").text(or.rime);
+      $("#reveal .correct #onset").text(or.onset);
+      $("#reveal .correct #rime").text(or.rime);
 
       // animate and sound out
       doSound(or.onset, "onset");
 
-      $("#stimulus #onset").animate({
+      $("#reveal .correct #onset").animate({
         "font-size": "300px",
            "top": "-20px"
         }, "slow", function () {
@@ -1011,14 +1011,14 @@ function reader(user) {
 
       this.incorrectStage3rime = function () {
 
-        $("#stimulus").html(stimHTMLStage3Incorrect);
+        $("#reveal .correct").html(stimHTMLStage3Incorrect);
         var or = splitOR(stimuli[0].word);
-        $("#stimulus #onset").text(or.onset);
-        $("#stimulus #rime").text(or.rime);
+        $("#reveal .correct #onset").text(or.onset);
+        $("#reveal .correct #rime").text(or.rime);
 
         // animate and sound out
         doSound(or.rime, "rime");
-        $("#stimulus #rime").animate({
+        $("#reveal .correct #rime").animate({
           "font-size": "300px",
           "top": "-20px"
         }, "slow", function () {
@@ -1032,11 +1032,11 @@ function reader(user) {
 
       this.incorrectStage3word = function () {
         // restore the word html
-        $("#stimulus").html(stimHTMLStage3);
-        $("#stimulus #word").text(stimuli[0].word);
+        $("#reveal .correct").html(stimHTMLStage3);
+        $("#reveal .correct #word").text(stimuli[0].word);
         // animate and sound out
         doStimSound(doStage[stage].stim());
-        $("#stimulus #word").animate({
+        $("#reveal .correct #word").animate({
           "font-size": "300px",
           "bottom": "-10px"
         }, "slow", app.cardReader[app.readerTurn].incorrectEnd);
