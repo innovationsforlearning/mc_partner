@@ -1,0 +1,530 @@
+/* partnerstation.css
+
+    CSS for index.html
+
+*/
+
+ * {
+
+  /*border: 2px dashed blue;*/
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+}
+/* override jqueryui modal dialog background as it gets destroyed by the keyboard */
+.ui-widget-overlay
+{
+  opacity: 0 !important; 
+  filter: Alpha(Opacity=50) !important;
+
+  background-color: rgb(50, 50, 50) !important; 
+}
+
+@font-face {
+    font-family: instructionalFont;
+    src: url("../font/DidactGothic.ttf");
+}
+body {
+    -webkit-touch-callout: none;
+    /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;
+    /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;
+    /* prevent copy paste, to allow, change 'none' to 'text' */
+
+    background:-webkit-linear-gradient(left, #68c304, #aef662);
+
+    margin:0;
+    padding:0;
+    font-family: instructionalFont;
+}
+/*
+** Common background
+*/
+ .container {
+    position:fixed;
+    top:0;
+    height:768px;
+    width:1024px;
+ 
+
+}
+.ui-dialog-osx {
+    -moz-border-radius: 0 0 8px 8px;
+    -webkit-border-radius: 0 0 8px 8px;
+    border-radius: 0 0 8px 8px; border-width: 0 8px 8px 8px;
+}
+.template {
+    display: none;
+}
+/*
+** Login
+*/
+#login_container {
+
+    background:-webkit-linear-gradient(left, #68c304, #aef662);
+}
+#login {
+    position: absolute;
+    top: 2%;
+    right: 1%;
+    float: right;
+    font-size: 28px;
+    font-family: sans-serif;
+}
+#username {
+    line-height:28px;
+}
+#pwd {
+    line-height:28px;
+}
+/* login p for login status */
+#login p {
+    font-size: 16px;
+    display: none;
+    color: #800;
+    text-align: center;
+}
+#login_button {
+    width:101px;
+    height:35px;
+    /*background: -webkit-image-set(url(../img/LoginButton.png) 1x,
+                                         url(../img/LoginButton_2x.png) 2x);*/
+    cursor:pointer;
+    -webkit-appearance:none;
+
+}
+ #header {
+    display: none;
+    /*keep it hidden until initialized*/
+    position:absolute;
+    width:100%;
+    top:20%;
+}
+#card_listener_select {
+    position:absolute;
+    left:7%;
+    /*
+    width:246px;
+    height:50px;
+    */
+    border-image-source: -webkit-image-set(url(../img/CardListener.png) 1x,
+               url(../img/CardListener_2x.png) 2x);
+    background-color: #44c8f5;
+
+
+ 
+}
+.select_label {
+    text-shadow: 2px 2px #222;
+    font: 20pt sans-serif;
+    font-weight: 500;
+    color: white;
+    text-indent: 30px;
+
+
+   width:500px;
+    height: 50px;
+    overflow: hidden;
+    -webkit-appearance:none;
+    border-width: 4px 50px 4px 4px;
+    border-image-slice: 4 50 4 4;
+    border-image-repeat: stretch;
+    cursor:pointer;
+
+}
+#card_reader1_select  {
+    position:absolute;
+    margin-top: 10%;
+    left:23%;
+    background-color: #ff5200;
+    border-image-source: -webkit-image-set(url(../img/CardReader.png) 1x,
+               url(../img/CardReader_2x.png) 2x);
+
+}
+#card_reader2_select  {
+    position:absolute;
+    margin-top: 20%;
+    left:46%;
+    background-color: #ff5200;
+    border-image-source: -webkit-image-set(url(../img/CardReader.png) 1x,
+               url(../img/CardReader_2x.png) 2x);
+
+}
+#go_button {
+    position:absolute;
+    left:80%;
+    width:139px;
+    height:181px;
+
+    background-image: -webkit-image-set(url(../img/GoButton.png) 1x,
+               url(../img/GoButton_2x.png) 2x);
+
+    cursor:pointer;
+}
+#splash {
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:307px;
+    height:342px;
+
+    background-image: -webkit-image-set(url(../img/Splash.png) 1x,
+               url(../img/Splash_2x.png) 2x);
+}
+
+/*
+** Game board
+*/
+#game_container {
+    background:#2a1e8f;
+}
+#game_board {
+    background:#806cee;
+    position:absolute;
+    top:10%;
+    left: 2%;
+    height:88%;
+    width:96%;
+}
+#game_header {
+    position:absolute;
+    top: 1%;
+    left: 0%;
+    height:20%;
+    width:100%;
+    /*background: green;*/
+}
+#help_button {
+    position: absolute;
+    display: inline-block;
+    float: left;
+    width: 74px;
+    height: 74px;
+
+    left: 2%;
+    top: 5%;
+
+    background: -webkit-image-set(url(../img/HelpButton.png) 1x,
+                                         url(../img/HelpButton_2x.png) 2x);
+}
+.student_name_box {
+    display: inline-block;
+    float:right;
+    width: 25%;
+    margin: 1% 0 1% 5%;
+    color: black;
+    text-align: center;
+}
+.student_name_box p {
+    margin: 1%;
+}
+.student_name_label {
+    margin: 1%;
+    padding-bottom: 2px;
+    font-size: 20px;
+}
+.student_role_label {
+    top: -1%;
+    font-size: 15px;
+}
+.student_highlight {
+    background-color: #FAFA64;
+    border: 2px solid white;
+    border-style: outset;
+    border-radius: 10px;
+}
+
+#stimulus {
+    /*border: 2px solid black;*/
+    background: white;
+    position: absolute;
+    width: 96%;
+    height: 60%;
+    top: 20%;
+    left: 2%;
+    text-align: center;
+    font-family: instructionalFont;
+    font-size: 200px;
+
+}
+
+.stage {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    width:100%;
+    font-size: 200px;
+}
+#stage2 #onset {
+    width:50%;
+    padding-right:5%;
+}
+#stage2 #word {
+    width: 50%;
+}
+#stage3Incorrect #word {
+    position: absolute;
+    right: auto;
+}
+#stage3Incorrect #onset {
+    position: absolute;
+    right: 55%;
+}
+#stage3Incorrect #rime {
+    position: absolute;
+    left: 50%;
+}
+#answer {
+    position:relative;
+    top:-60%;
+    left: 10%;
+    width: 80%;
+}
+#yes_button {
+    position:absolute;
+    width: 74px;
+    height: 74px;
+
+    background: -webkit-image-set(url(../img/YesButton.png) 1x,
+                                         url(../img/YesButton_2x.png) 2x);
+    left:20%;
+}
+#no_button {
+    position:absolute;
+    width: 74px;
+    height: 74px;
+
+    background: -webkit-image-set(url(../img/NoButton.png) 1x,
+                                         url(../img/NoButton_2x.png) 2x);
+    left:70%;
+}
+#game_footer {
+    position:absolute;
+    height: 60px;
+    bottom:0;
+    width:100%;
+}
+#score {
+    position:absolute;
+    left:2%;
+    bottom: 2%;
+    width: 117px;
+    height:70px;
+    text-align: center;
+
+    background: -webkit-image-set(url(../img/ScoreBox.png) 1x,
+                                         url(../img/ScoreBox_2x.png) 2x);
+}
+#score_label {
+    position: relative;
+    top: 30%;
+    font-size: 40px;
+}
+#review_button {
+    position:absolute;
+    width: 175px;
+    height: 36px;
+    right: 2%;
+    bottom: 2%;
+
+    background: -webkit-image-set(url(../img/ScoringButton.png) 1x,
+                                         url(../img/ScoringButton_2x.png) 2x);
+
+}
+/*
+** Teacher Review
+*/
+#review_container {
+       background:-webkit-linear-gradient(left, #806cee, #2a1e8f);
+}
+ .review {
+    position:absolute;
+    top:5%;
+    left: 5%;
+    height:80%;
+    width:90%;
+    font-family: sans-serif;
+    font-size: small;
+    /*background:#ffffff;*/
+}
+.review_nav {
+    position:absolute;
+    height:15%;
+    width:100%;
+    /*background: green;*/
+}
+#card_reader_label {
+    float: left;
+    margin-right: 1%;
+}
+#card_reader_select {
+    float: left;
+    width: 20%;
+    height: 40%;
+    margin: 0;
+}
+.review_nav_button {
+    float: right;
+    width: 10%;
+    height: 40%;
+    border-radius: 5px;
+    margin:0% 1%;
+    text-align: center;
+    color:white;
+    padding: 1%;
+    border: 1px solid white;
+}
+#review_dashboard {
+    position:absolute;
+    height:80%;
+    width: 90%;
+    margin: 0%;
+    top: 10%;
+}
+#correct_word_list {
+    display: inline-block;
+    width:30%;
+    height:100%;
+    font-family: "instructionalFont";
+    /*background: blue;*/
+}
+#correct_word_list textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    overflow:auto;
+    font-family: "instructionalFont";
+    font-size:x-large;
+    line-height: 2;
+}
+#controls {
+    position:absolute;
+    display: inline-block;
+    top:0;
+    right:0;
+    width:60%;
+    height:100%;
+    /*background-color:red;*/
+}
+#review_score {
+    width:100%;
+    position: absolute;
+    bottom:0;
+}
+.review_box {
+    display: inline-block;
+    background: white;
+    width:6%;
+    height:50%;
+    padding:1% 3%;
+    margin:2%;
+    border-radius: 5px;
+}
+.review_box_correct {
+    background: green;
+}
+.review_box_incorrect {
+    background: red;
+}
+.review_label {
+    display: inline-block;
+    text-align: right;
+    color:white;
+    width:20%;
+    /*background: gray;*/
+}
+.review_column_header {
+    display: inline-block;
+    width:6%;
+    padding:1% 3%;
+    padding-bottom: 0;
+    margin:2%;
+    margin-bottom: 0;
+    bottom:-1%;
+    text-align: center;
+    text-indent: 0;
+    color:white;
+    /*background: green;*/
+}
+/*
+
+Review Report
+
+*/
+#report_container {
+       background:-webkit-linear-gradient(left, #806cee, #2a1e8f);
+}
+table {
+    font-size: large;
+    color:white;
+    border: 1px solid white;
+    border-color: white;
+    border-collapse:collapse;
+}
+td {
+    font-size: large;
+    color:white;
+    border: 1px solid white;
+    border-color: white;
+    border-collapse:collapse;
+    padding:2% 3%;
+}
+th {
+    font-size: large;
+    color:white;
+    border: 1px solid white;
+    border-color: white;
+    border-collapse:collapse;
+    padding:3%;
+}
+tr {
+    width: 100%;
+}
+
+#table_head {
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    position: absolute;
+    left: 0%;
+    width:100%;
+    top: 15%;
+}
+#table_container {
+    border-top: 1px solid white;    
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    position: absolute;
+    left: 0%;
+    width:100%;
+    top: 30%;
+    height: 75%;
+    overflow: scroll;
+}
+#report_tab {
+    width: 100%;
+    height: 100%;
+}
+#report_head {
+    border: 1px solid white;
+    border-color: white;
+    border-collapse:collapse;
+}
+#report_tab:nth-child(even) {
+    background:#382f91;
+}
+
+.name_col {
+    width:86%;
+    background: #2a1e8f;
+}
+.score_col {
+    text-align: center;
+    background: #2a1e8f;
+}
+
+tbody {
+    height: 100%;
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+}
