@@ -606,18 +606,6 @@
 
       },
 
-      checkAnswer: function (stim) {
-          console.log("checkAnswer: "+stim);
-          if (app.cardReader[app.readerTurn].isStimCorrect(stim)){
-            app.cardReader[app.readerTurn].doCorrect();
-            app.nextReader();
-          }else{
-            app.cardReader[app.readerTurn].doIncorrect();
-          }
-
-
-      },
-
       incorrect_words: function (target, source){
         var words = source.slice();
         var a = words.indexOf(target);
@@ -925,12 +913,25 @@ function reader(user) {
             stim = stim.replace("Word"+i, words[i]);            
           }
           $("#stimulus").html(stim);
-          $("#reveal #stim"+correctIndex).addClass("correct");
           for(var r=0;r<4;r++){
 
-            $("#stim"+r).click(function (){
-              app.checkAnswer(this.innerText);
-            });
+            var stimClass;
+            if(r===correctIndex){
+              stimClass='correct';
+              $("#stim"+r).click(function (){
+                app.cardReader[app.readerTurn].doCorrect();
+                app.nextReader();
+              });
+
+            }else{
+              stimClass='incorrect';
+              $("#stim"+r).click(function (){
+                app.cardReader[app.readerTurn].doIncorrect();
+              });
+
+            }
+            $("#reveal #stim"+correctIndex).addClass(stimClass);
+ 
 
           }
           //$("#stimulus #word").text(stimuli[0].word);
@@ -979,7 +980,9 @@ function reader(user) {
            }, 1000);
         });
 
+        function fadeIncorrect(){
 
+        }
 
 
       };
