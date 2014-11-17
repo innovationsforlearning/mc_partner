@@ -32,7 +32,9 @@
   var stimHTMLStage2 = "<div class='stage' id='stage2'><span id='onset'></span><span id='word'></span></div>";
   var stimHTMLStage3 = "<div class='stage' id='stage3'><div id='word'></div></div>";
 
-  var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  //var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  var stimHTMLStage3Incorrect = "<span id='onset'></span><span id='rime'></span>";
+  var stimHTMLStage3IncorrectWord = "<span id='word'></span>";
 
   var stimReveal = "<div id='reveal'><div><span id='stim0'>Word0</span><span id='stim1'>Word1</span></div><div><span id='stim2'>Word2</span><span id='stim3'>Word3</span></div></div>"
 
@@ -737,7 +739,8 @@ function reader(user) {
         // each part is highlighted and sounded, and then the word is put back together 
         // and sounded as a whole word.)
         //
-        doStage[stage].incorrect();
+
+        this.fadeIncorrect(doStage[stage].incorrect);
 
       };
       this.finishIncorrect = function () {
@@ -754,6 +757,21 @@ function reader(user) {
     this.doHelp = function () {
       doStimSound(doStage[stage].stim());
     };
+
+
+    this.fadeIncorrect = function (callback){
+
+      var a=$("#reveal .incorrect");
+      a.animate({
+        "opacity": "0"
+      },"slow");
+
+      setTimeout(
+         function () {
+             callback();
+         }, 1000);
+    }
+
 
     //
     // Private Methods
@@ -930,7 +948,7 @@ function reader(user) {
               });
 
             }
-            $("#reveal #stim"+correctIndex).addClass(stimClass);
+            $("#reveal #stim"+r).addClass(stimClass);
  
 
           }
@@ -973,17 +991,12 @@ function reader(user) {
             "font-size": "200px",
             "bottom": "-10px"
           }, "slow", function () {
-           setTimeout(
+             setTimeout(
 
-           function () {
-               callback();
-           }, 1000);
-        });
-
-        function fadeIncorrect(){
-
-        }
-
+             function () {
+                 callback();
+             }, 1000);
+          });
 
       };
 
@@ -999,14 +1012,15 @@ function reader(user) {
 
       // animate and sound out
       doSound(or.onset, "onset");
+      $("#reveal .correct #onset").css("color","#00FF00");
 
       $("#reveal .correct #onset").animate({
-        "font-size": "300px",
-           "top": "-20px"
+        "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", function () {
-           setTimeout(
 
-           function () {
+           setTimeout(
+            function () {
                app.cardReader[app.readerTurn].incorrectStage3rime();
            }, 1000);
         });
@@ -1021,10 +1035,13 @@ function reader(user) {
 
         // animate and sound out
         doSound(or.rime, "rime");
+        $("#reveal .correct #onset").css("color","black");
+        $("#reveal .correct #rime").css("color","#00FF00");
         $("#reveal .correct #rime").animate({
-          "font-size": "300px",
-          "top": "-20px"
+          "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", function () {
+
              setTimeout(
 
              function () {
@@ -1035,13 +1052,13 @@ function reader(user) {
 
       this.incorrectStage3word = function () {
         // restore the word html
-        $("#reveal .correct").html(stimHTMLStage3);
+        $("#reveal .correct").html(stimHTMLStage3IncorrectWord);
         $("#reveal .correct #word").text(stimuli[0].word);
         // animate and sound out
         doStimSound(doStage[stage].stim());
         $("#reveal .correct #word").animate({
-          "font-size": "300px",
-          "bottom": "-10px"
+          "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", app.cardReader[app.readerTurn].incorrectEnd);
       };
 

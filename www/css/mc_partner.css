@@ -237,6 +237,7 @@ body {
 
 #stimulus {
     /*border: 2px solid black;*/
+    color: #000000;
     background: white;
     position: absolute;
     width: 96%;
@@ -270,14 +271,18 @@ body {
     width: 50%;
 }
 #stage3Incorrect #word {
+    font-size: 100px;
+    
     position: absolute;
     right: auto;
 }
 #stage3Incorrect #onset {
+    font-size: 100px;
     position: absolute;
     right: 55%;
 }
 #stage3Incorrect #rime {
+    font-size: 100px;
     position: absolute;
     left: 50%;
 }
