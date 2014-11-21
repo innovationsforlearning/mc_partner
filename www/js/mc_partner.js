@@ -36,7 +36,7 @@
   var stimHTMLStage3Incorrect = "<span id='onset'></span><span id='rime'></span>";
   var stimHTMLStage3IncorrectWord = "<span id='word'></span>";
 
-  var stimReveal = "<div id='reveal'><div><span id='stim0'>Word0</span><span id='stim1'>Word1</span></div><div><span id='stim2'>Word2</span><span id='stim3'>Word3</span></div></div>"
+  var stimReveal = "<div id='reveal'><span class='reveal_word' id='stim0'>Word0</span><span class='reveal_word' id='stim1'>Word1</span><span class='reveal_word' id='stim2'>Word2</span><span class='reveal_word' id='stim3'>Word3</span></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -926,7 +926,7 @@ function reader(user) {
           }
           var correctIndex=Math.floor(Math.random()*3);
           words.splice(correctIndex,0,stimuli[0].word);
-          var stim=stimReveal;
+          var stim=stimReveal.slice();
           for(var i=0;i<4;i++){
             stim = stim.replace("Word"+i, words[i]);            
           }
@@ -944,6 +944,8 @@ function reader(user) {
             }else{
               stimClass='incorrect';
               $("#stim"+r).click(function (){
+                $(this).removeClass('incorrect');
+                $(this).addClass('selected');
                 app.cardReader[app.readerTurn].doIncorrect();
               });
 

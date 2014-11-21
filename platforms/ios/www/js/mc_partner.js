@@ -32,9 +32,11 @@
   var stimHTMLStage2 = "<div class='stage' id='stage2'><span id='onset'></span><span id='word'></span></div>";
   var stimHTMLStage3 = "<div class='stage' id='stage3'><div id='word'></div></div>";
 
-  var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  //var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  var stimHTMLStage3Incorrect = "<span id='onset'></span><span id='rime'></span>";
+  var stimHTMLStage3IncorrectWord = "<span id='word'></span>";
 
-  var stimReveal = "<div id='reveal'><div><span id='stim0'>Word0</span><span id='stim1'>Word1</span></div><div><span id='stim2'>Word2</span><span id='stim3'>Word3</span></div></div>"
+  var stimReveal = "<div id='reveal'><div><span class='reveal_word' id='stim0'>Word0</span><span class='reveal_word' id='stim1'>Word1</span></div><div><span class='reveal_word' id='stim2'>Word2</span><span class='reveal_word' id='stim3'>Word3</span></div></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -606,11 +608,6 @@
 
       },
 
-      checkAnswer: function (stim) {
-          console.log("checkAnswer: "+stim);
-          app.nextReader();
-      },
-
       incorrect_words: function (target, source){
         var words = source.slice();
         var a = words.indexOf(target);
@@ -694,6 +691,10 @@ function reader(user) {
       });
     };
 
+    this.isStimCorrect = function (stim){
+      return stim === doStage[stage].stim();
+    }
+
     this.doCorrect = function () {
         //
         //! 4.1 A Listener can mark an answer as correct
@@ -738,7 +739,8 @@ function reader(user) {
         // each part is highlighted and sounded, and then the word is put back together 
         // and sounded as a whole word.)
         //
-        doStage[stage].incorrect();
+
+        this.fadeIncorrect(doStage[stage].incorrect);
 
       };
       this.finishIncorrect = function () {
@@ -755,6 +757,21 @@ function reader(user) {
     this.doHelp = function () {
       doStimSound(doStage[stage].stim());
     };
+
+
+    this.fadeIncorrect = function (callback){
+
+      var a=$("#reveal .incorrect");
+      a.animate({
+        "opacity": "0"
+      },"slow");
+
+      setTimeout(
+         function () {
+             callback();
+         }, 1000);
+    }
+
 
     //
     // Private Methods
@@ -909,17 +926,32 @@ function reader(user) {
           }
           var correctIndex=Math.floor(Math.random()*3);
           words.splice(correctIndex,0,stimuli[0].word);
-          var stim=stimReveal;
+          var stim=stimReveal.slice();
           for(var i=0;i<4;i++){
             stim = stim.replace("Word"+i, words[i]);            
           }
-
           $("#stimulus").html(stim);
           for(var r=0;r<4;r++){
 
-            $("#stim"+r).click(function (){
-              app.checkAnswer(this.id);
-            });
+            var stimClass;
+            if(r===correctIndex){
+              stimClass='correct';
+              $("#stim"+r).click(function (){
+                app.cardReader[app.readerTurn].doCorrect();
+                app.nextReader();
+              });
+
+            }else{
+              stimClass='incorrect';
+              $("#stim"+r).click(function (){
+                $(this).removeClass('incorrect');
+                $(this).addClass('selected');
+                app.cardReader[app.readerTurn].doIncorrect();
+              });
+
+            }
+            $("#reveal #stim"+r).addClass(stimClass);
+ 
 
           }
           //$("#stimulus #word").text(stimuli[0].word);
@@ -956,19 +988,17 @@ function reader(user) {
           }
           // highlight and say the word and then continue to split the word
           doStimSound(doStage[stage].stim());
-          $("#stage3 #word").animate({
-            "font-size": "300px",
+          //$("#stage3 #word").animate({
+          $("#reveal .correct").animate({
+            "font-size": "200px",
             "bottom": "-10px"
           }, "slow", function () {
-           setTimeout(
+             setTimeout(
 
-           function () {
-               callback();
-           }, 1000);
-        });
-
-
-
+             function () {
+                 callback();
+             }, 1000);
+          });
 
       };
 
@@ -977,21 +1007,22 @@ function reader(user) {
     //
     this.incorrectStage3onset = function () {
       // split the onset and rime, highlight the onset and pronounce it
-      $("#stimulus").html(stimHTMLStage3Incorrect);
+      $("#reveal .correct").html(stimHTMLStage3Incorrect);
       var or = splitOR(stimuli[0].word);
-      $("#stimulus #onset").text(or.onset);
-      $("#stimulus #rime").text(or.rime);
+      $("#reveal .correct #onset").text(or.onset);
+      $("#reveal .correct #rime").text(or.rime);
 
       // animate and sound out
       doSound(or.onset, "onset");
+      $("#reveal .correct #onset").css("color","#00FF00");
 
-      $("#stimulus #onset").animate({
-        "font-size": "300px",
-           "top": "-20px"
+      $("#reveal .correct #onset").animate({
+        "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", function () {
-           setTimeout(
 
-           function () {
+           setTimeout(
+            function () {
                app.cardReader[app.readerTurn].incorrectStage3rime();
            }, 1000);
         });
@@ -999,17 +1030,20 @@ function reader(user) {
 
       this.incorrectStage3rime = function () {
 
-        $("#stimulus").html(stimHTMLStage3Incorrect);
+        $("#reveal .correct").html(stimHTMLStage3Incorrect);
         var or = splitOR(stimuli[0].word);
-        $("#stimulus #onset").text(or.onset);
-        $("#stimulus #rime").text(or.rime);
+        $("#reveal .correct #onset").text(or.onset);
+        $("#reveal .correct #rime").text(or.rime);
 
         // animate and sound out
         doSound(or.rime, "rime");
-        $("#stimulus #rime").animate({
-          "font-size": "300px",
-          "top": "-20px"
+        $("#reveal .correct #onset").css("color","black");
+        $("#reveal .correct #rime").css("color","#00FF00");
+        $("#reveal .correct #rime").animate({
+          "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", function () {
+
              setTimeout(
 
              function () {
@@ -1020,13 +1054,13 @@ function reader(user) {
 
       this.incorrectStage3word = function () {
         // restore the word html
-        $("#stimulus").html(stimHTMLStage3);
-        $("#stimulus #word").text(stimuli[0].word);
+        $("#reveal .correct").html(stimHTMLStage3IncorrectWord);
+        $("#reveal .correct #word").text(stimuli[0].word);
         // animate and sound out
         doStimSound(doStage[stage].stim());
-        $("#stimulus #word").animate({
-          "font-size": "300px",
-          "bottom": "-10px"
+        $("#reveal .correct #word").animate({
+          "font-size": "200px",
+            "bottom": "-10px"
         }, "slow", app.cardReader[app.readerTurn].incorrectEnd);
       };
 

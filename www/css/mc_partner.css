@@ -182,12 +182,13 @@ body {
 #game_board {
     background:#806cee;
     position:absolute;
-    top:10%;
+    top: 2%;
     left: 2%;
-    height:88%;
+    height:96%;
     width:96%;
 }
 #game_header {
+    display: none;
     position:absolute;
     top: 1%;
     left: 0%;
@@ -197,7 +198,8 @@ body {
 }
 #help_button {
     position: absolute;
-    display: inline-block;
+    /*display: inline-block;*/
+    display: none;
     float: left;
     width: 74px;
     height: 74px;
@@ -209,7 +211,8 @@ body {
                                          url(../img/HelpButton_2x.png) 2x);
 }
 .student_name_box {
-    display: inline-block;
+    display: none;
+    /*display: inline-block;*/
     float:right;
     width: 25%;
     margin: 1% 0 1% 5%;
@@ -241,20 +244,13 @@ body {
     background: white;
     position: absolute;
     width: 96%;
-    height: 60%;
-    top: 20%;
+    height: 96%;
+    top: 2%;
     left: 2%;
     text-align: center;
     font-family: instructionalFont;
     font-size: 200px;
 
-}
-#reveal {
-    font-size: 100px;
-    margin: 2%;
-}
-#reveal span {
-    margin: 10%;
 }
 .stage {
     position: absolute;
@@ -270,9 +266,9 @@ body {
 #stage2 #word {
     width: 50%;
 }
+/*
 #stage3Incorrect #word {
     font-size: 100px;
-    
     position: absolute;
     right: auto;
 }
@@ -286,6 +282,79 @@ body {
     position: absolute;
     left: 50%;
 }
+*/
+#reveal {
+    background: red;
+
+    position: absolute;
+    font-size: 100px;
+    top: 2%;
+    left: 2%;
+    width: 96%;
+    height: 96%;
+}
+
+#reveal #stim0 {
+    background: 'yellow';
+    position: absolute;
+    width: 48%;
+    height: 48%;
+    top: 0%;
+    left:0%;
+}
+#reveal #stim1 {
+    background: 'yellow';
+    position: absolute;
+    width: 48%;
+    height: 48%;
+    top: 0%;
+    right:0%;
+}
+#reveal #stim2 {
+    background: 'yellow';
+    position: absolute;
+    width: 48%;
+    height: 48%;
+    bottom: 0%;
+    left:0%;
+}
+#reveal #stim3 {
+    background: 'yellow';
+    position: absolute;
+    width: 48%;
+    height: 48%;
+    bottom: 0%;
+    right: 0%;
+}
+
+.reveal_word {
+    position: relative;
+    margin: 48%, 48%;
+    background-color: 'yellow';
+    border: 2px dashed blue;
+}
+.reveal_word #onset{
+   border: 2px dashed red;
+    position: absolute;
+    z-index: 0;
+    left: -200px;
+}
+.reveal_word #rime{
+  border: 2px dashed green;
+    position: absolute;
+    z-index: 1;
+    left: -100px;
+}
+/*
+#reveal.correct #onset {
+    font-size: 100px;
+    position: absolute;
+}
+#reveal.correct #rime {
+    font-size: 100px;
+    position: absolute;
+}
+*/
 #answer {
     position:relative;
     top:-60%;
@@ -317,6 +386,7 @@ body {
     width:100%;
 }
 #score {
+    display: none;
     position:absolute;
     left:2%;
     bottom: 2%;

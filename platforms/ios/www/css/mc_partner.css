@@ -237,6 +237,7 @@ body {
 
 #stimulus {
     /*border: 2px solid black;*/
+    color: #000000;
     background: white;
     position: absolute;
     width: 96%;
@@ -269,18 +270,49 @@ body {
 #stage2 #word {
     width: 50%;
 }
+/*
 #stage3Incorrect #word {
+    font-size: 100px;
     position: absolute;
     right: auto;
 }
 #stage3Incorrect #onset {
+    font-size: 100px;
     position: absolute;
     right: 55%;
 }
 #stage3Incorrect #rime {
+    font-size: 100px;
     position: absolute;
     left: 50%;
 }
+*/
+.reveal_word {
+    position: relative;
+    border: 2px dashed blue;
+}
+.reveal_word #onset{
+   border: 2px dashed red;
+    position: absolute;
+    z-index: 0;
+    left: -200px;
+}
+.reveal_word #rime{
+  border: 2px dashed green;
+    position: absolute;
+    z-index: 1;
+    left: -100px;
+}
+/*
+#reveal.correct #onset {
+    font-size: 100px;
+    position: absolute;
+}
+#reveal.correct #rime {
+    font-size: 100px;
+    position: absolute;
+}
+*/
 #answer {
     position:relative;
     top:-60%;
