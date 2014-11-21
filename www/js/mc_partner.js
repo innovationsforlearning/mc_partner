@@ -987,10 +987,12 @@ function reader(user) {
             callback = app.cardReader[app.readerTurn].incorrectStage3onset;
           }
           // highlight and say the word and then continue to split the word
-          doStimSound(doStage[stage].stim());
-          //$("#stage3 #word").animate({
+          var stim = doStage[stage].stim();
+          doStimSound(stim);
+          var size = (stim.length < 5 ?'200px' :'150px');
+
           $("#reveal .correct").animate({
-            "font-size": "200px",
+            "font-size": size,
             "bottom": "-10px"
           }, "slow", function () {
              setTimeout(
