@@ -1019,15 +1019,21 @@ function reader(user) {
       $("#reveal .correct #onset").css("color","#00FF00");
 
       $("#reveal .correct #onset").animate({
+        /*
         "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", function () {
+        */
+          "left": "1%"
+        }, "fast", function () {
 
            setTimeout(
             function () {
                app.cardReader[app.readerTurn].incorrectStage3rime();
            }, 1000);
         });
+
+
+
       };
 
       this.incorrectStage3rime = function () {
@@ -1041,10 +1047,15 @@ function reader(user) {
         doSound(or.rime, "rime");
         $("#reveal .correct #onset").css("color","black");
         $("#reveal .correct #rime").css("color","#00FF00");
+
+
         $("#reveal .correct #rime").animate({
+/*
           "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", function () {
+*/
+          "right": "1%"
+        }, "fast", function () {
 
              setTimeout(
 
