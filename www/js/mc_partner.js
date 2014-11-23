@@ -685,7 +685,7 @@ function reader(user) {
 
     this.nextStimulus = function () {
       doStage[stage].display();
-      $("div.stage").click(function (){
+      $("div.stage").one("click",function (event){
         doStage[stage].reveal();
         //app.cardReader[app.readerTurn].reveal();
       });
@@ -936,14 +936,14 @@ function reader(user) {
             var stimClass;
             if(r===correctIndex){
               stimClass='correct';
-              $("#stim"+r).click(function (){
+              $("#stim"+r).one("click",function (){
                 app.cardReader[app.readerTurn].doCorrect();
                 app.nextReader();
               });
 
             }else{
               stimClass='incorrect';
-              $("#stim"+r).click(function (){
+              $("#stim"+r).one("click",function (){
                 $(this).removeClass('incorrect');
                 $(this).addClass('selected');
                 app.cardReader[app.readerTurn].doIncorrect();
