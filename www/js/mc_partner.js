@@ -997,7 +997,8 @@ function reader(user) {
           var reader = app.cardReader[app.readerTurn];
           var callback = reader.feedbackEnd;
         // if the word is an Onset Rime Word
-          if (stimuli[0].type === "or") {
+        //  if (stimuli[0].type === "or") {
+          if (reader.feedbackQueue[0].stimulus.type === "or") {
             callback = reader.feedbackStage3onset;
           }
           // highlight and say the word and then continue to split the word
