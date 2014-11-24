@@ -1121,7 +1121,10 @@ function reader(user) {
         if(reader.feedbackQueue.length>1)
         {
           reader.feedbackQueue.shift();
-          doStage[stage].feedback();
+          setTimeout(function () {
+            var r = app.cardReader[app.readerTurn];
+            doStage[stage].feedback();
+          }, 1000);
         }else{
           setTimeout(function () {
             app.nextReader();
