@@ -32,9 +32,9 @@
   var stimHTMLStage2 = "<div class='stage' id='stage2'><span id='onset'></span><span id='word'></span></div>";
   var stimHTMLStage3 = "<div class='stage' id='stage3'><div id='word'></div></div>";
 
-  //var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
-  var stimHTMLStage3Incorrect = "<span id='onset'></span><span id='rime'></span>";
-  var stimHTMLStage3IncorrectWord = "<span id='word'></span>";
+  //var stimHTMLStage3Feedback = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  var stimHTMLStage3Feedback = "<span id='onset'></span><span id='rime'></span>";
+  var stimHTMLStage3FeedbackWord = "<span id='word'></span>";
 
   var stimReveal = "<div id='reveal'><span class='reveal_word' id='stim0'>Word0</span><span class='reveal_word' id='stim1'>Word1</span><span class='reveal_word' id='stim2'>Word2</span><span class='reveal_word' id='stim3'>Word3</span></div>"
 
@@ -743,7 +743,7 @@ function reader(user) {
         this.fadeIncorrect(doStage[stage].incorrect);
 
       };
-      this.finishIncorrect = function () {
+      this.finishFeedback = function () {
         stimuli.push(stimuli.shift());
       };
 
@@ -971,20 +971,20 @@ function reader(user) {
 
         function incorrectStage1() {
           doStimSound(doStage[stage].stim());
-          app.cardReader[app.readerTurn].incorrectEnd();
+          app.cardReader[app.readerTurn].feedbackEnd();
         }
 
         function incorrectStage2() {
           doStimSound(doStage[stage].stim());
-          app.cardReader[app.readerTurn].incorrectEnd();
+          app.cardReader[app.readerTurn].feedbackEnd();
         }
 
         
         function incorrectStage3() {
-          var callback = app.cardReader[app.readerTurn].incorrectEnd;
+          var callback = app.cardReader[app.readerTurn].feedbackEnd;
         // if the word is an Onset Rime Word
           if (stimuli[0].type === "or") {
-            callback = app.cardReader[app.readerTurn].incorrectStage3onset;
+            callback = app.cardReader[app.readerTurn].feedbackStage3onset;
           }
           // highlight and say the word and then continue to split the word
           var stim = doStage[stage].stim();
@@ -1007,9 +1007,9 @@ function reader(user) {
     //
     // make callbacks public 
     //
-    this.incorrectStage3onset = function () {
+    this.feedbackStage3onset = function () {
       // split the onset and rime, highlight the onset and pronounce it
-      $("#reveal .correct").html(stimHTMLStage3Incorrect);
+      $("#reveal .correct").html(stimHTMLStage3Feedback);
       var or = splitOR(stimuli[0].word);
       $("#reveal .correct #onset").text(or.onset);
       $("#reveal .correct #rime").text(or.rime);
@@ -1028,7 +1028,7 @@ function reader(user) {
 
            setTimeout(
             function () {
-               app.cardReader[app.readerTurn].incorrectStage3rime();
+               app.cardReader[app.readerTurn].feedbackStage3rime();
            }, 1000);
         });
 
@@ -1036,9 +1036,9 @@ function reader(user) {
 
       };
 
-      this.incorrectStage3rime = function () {
+      this.feedbackStage3rime = function () {
 
-        $("#reveal .correct").html(stimHTMLStage3Incorrect);
+        $("#reveal .correct").html(stimHTMLStage3Feedback);
         var or = splitOR(stimuli[0].word);
         $("#reveal .correct #onset").text(or.onset);
         $("#reveal .correct #rime").text(or.rime);
@@ -1060,26 +1060,26 @@ function reader(user) {
              setTimeout(
 
              function () {
-                 app.cardReader[app.readerTurn].incorrectStage3word();
+                 app.cardReader[app.readerTurn].feedbackStage3word();
              }, 1000);
          });
       };
 
-      this.incorrectStage3word = function () {
+      this.feedbackStage3word = function () {
         // restore the word html
-        $("#reveal .correct").html(stimHTMLStage3IncorrectWord);
+        $("#reveal .correct").html(stimHTMLStage3FeedbackWord);
         $("#reveal .correct #word").text(stimuli[0].word);
         // animate and sound out
         doStimSound(doStage[stage].stim());
         $("#reveal .correct #word").animate({
           "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", app.cardReader[app.readerTurn].incorrectEnd);
+        }, "slow", app.cardReader[app.readerTurn].feedbackEnd);
       };
 
 
-      this.incorrectEnd = function () {
-        app.cardReader[app.readerTurn].finishIncorrect();
+      this.feedbackEnd = function () {
+        app.cardReader[app.readerTurn].finishFeedback();
         // use closure to pass scope
         setTimeout(function () {
           app.nextReader();
