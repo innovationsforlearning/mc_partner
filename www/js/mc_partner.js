@@ -748,8 +748,8 @@ function reader(user) {
 
         this.feedbackQueue=[];
   
-        this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
         this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
+        this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
         this.fadeIncorrect(doStage[stage].feedback);
 
       };
@@ -1114,11 +1114,19 @@ function reader(user) {
 
 
       this.feedbackEnd = function () {
-        app.cardReader[app.readerTurn].finishFeedback();
+        var reader = app.cardReader[app.readerTurn];
+
+        reader.finishFeedback();
         // use closure to pass scope
-        setTimeout(function () {
-          app.nextReader();
-        }, 1000);
+        if(reader.feedbackQueue.length>1)
+        {
+          reader.feedbackQueue.shift();
+          doStage[stage].feedback();
+        }else{
+          setTimeout(function () {
+            app.nextReader();
+          }, 1000);
+        }
       };
 
       function splitOR(word) {
