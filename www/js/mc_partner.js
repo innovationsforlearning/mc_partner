@@ -657,6 +657,8 @@ function reader(user) {
 
     this.score = 0;
     this.correctStimuli = [];
+    this.revealStimuli = [];
+    this.feedbackQueue=[];
 
     var stimuli = [];
 
@@ -676,7 +678,7 @@ function reader(user) {
       init: initStage3,
       display: displayStage3,
       reveal: revealStage3,
-      incorrect: incorrectStage3,
+      feedback: feedbackStage3,
       stim: getStimStage3
     }];
     //
@@ -696,7 +698,8 @@ function reader(user) {
     }
 
     this.doCorrect = function () {
-        //
+         this.feedbackQueue=[{stimulus: stimuli[0], selector: ".correct"}];
+       //
         //! 4.1 A Listener can mark an answer as correct
         //
         //
@@ -707,11 +710,11 @@ function reader(user) {
         $("#score_label").text(++this.score);
         // add this stim to the correct list to review
         // IFF it is not already on the list
-        var stimulus = stimuli.shift();
+        var correctStimulus = stimuli.shift();
         //alert("doCorrect:stimulus:"+stimulus.word)
         //alert("doCorrect:correctStimuli.indexOf(stimulus):"+this.correctStimuli.indexOf(stimulus))
-        if(this.correctStimuli.indexOf(stimulus)===-1){
-          this.correctStimuli.push(stimulus);
+        if(this.correctStimuli.indexOf(correctStimulus)===-1){
+          this.correctStimuli.push(correctStimulus);
           //alert("doCorrect:correctStimuli:"+this.correctStimuli.join())
         }
         //
@@ -724,9 +727,11 @@ function reader(user) {
         if (stimuli.length === 0) {
           initStimuli();
         }
+        this.fadeIncorrect(doStage[stage].feedback);
+
       };
 
-      this.doIncorrect = function () {
+      this.doIncorrect = function (incorrectStimulus) {
         //
         //! 5.1 A Listener can mark a Reader response as incorrect
         //
@@ -739,8 +744,13 @@ function reader(user) {
         // each part is highlighted and sounded, and then the word is put back together 
         // and sounded as a whole word.)
         //
+        
 
-        this.fadeIncorrect(doStage[stage].incorrect);
+        this.feedbackQueue=[];
+  
+        this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
+        this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
+        this.fadeIncorrect(doStage[stage].feedback);
 
       };
       this.finishFeedback = function () {
@@ -920,15 +930,16 @@ function reader(user) {
         }
 
         function revealStage3() {
-          var words=[];
+          var reader =app.cardReader[app.readerTurn];
+          reader.revealStimuli=[];
           for(var i=0;i<3;i++){
-            words.push(stimuli[0].incorrect[i])
+            reader.revealStimuli.push(stimuli[0].incorrect[i])
           }
           var correctIndex=Math.floor(Math.random()*3);
-          words.splice(correctIndex,0,stimuli[0].word);
+          reader.revealStimuli.splice(correctIndex,0,stimuli[0].word);
           var stim=stimReveal.slice();
           for(var i=0;i<4;i++){
-            stim = stim.replace("Word"+i, words[i]);            
+            stim = stim.replace("Word"+i, reader.revealStimuli[i]);            
           }
           $("#stimulus").html(stim);
           for(var r=0;r<4;r++){
@@ -938,7 +949,7 @@ function reader(user) {
               stimClass='correct';
               $("#stim"+r).one("click",function (){
                 app.cardReader[app.readerTurn].doCorrect();
-                app.nextReader();
+                //app.nextReader();
               });
 
             }else{
@@ -946,7 +957,9 @@ function reader(user) {
               $("#stim"+r).one("click",function (){
                 $(this).removeClass('incorrect');
                 $(this).addClass('selected');
-                app.cardReader[app.readerTurn].doIncorrect();
+                var i = parseInt($(this).attr("id").slice(-1));
+                var incorrectStim = app.cardReader[app.readerTurn].revealStimuli[i];
+                app.cardReader[app.readerTurn].doIncorrect(incorrectStim);
               });
 
             }
@@ -980,18 +993,22 @@ function reader(user) {
         }
 
         
-        function incorrectStage3() {
-          var callback = app.cardReader[app.readerTurn].feedbackEnd;
+        function feedbackStage3() {
+          var reader = app.cardReader[app.readerTurn];
+          var callback = reader.feedbackEnd;
         // if the word is an Onset Rime Word
           if (stimuli[0].type === "or") {
-            callback = app.cardReader[app.readerTurn].feedbackStage3onset;
+            callback = reader.feedbackStage3onset;
           }
           // highlight and say the word and then continue to split the word
-          var stim = doStage[stage].stim();
+          //var stim = doStage[stage].stim();
+          var stim = reader.feedbackQueue[0].stimulus.word;
+          var selector = "#reveal "+ reader.feedbackQueue[0].selector;
           doStimSound(stim);
           var size = (stim.length < 5 ?'200px' :'150px');
 
-          $("#reveal .correct").animate({
+          //$("#reveal .correct").animate({
+          $(selector).animate({
             "font-size": size,
             "bottom": "-10px"
           }, "slow", function () {
@@ -1008,17 +1025,22 @@ function reader(user) {
     // make callbacks public 
     //
     this.feedbackStage3onset = function () {
+      var reader = app.cardReader[app.readerTurn];
+
       // split the onset and rime, highlight the onset and pronounce it
-      $("#reveal .correct").html(stimHTMLStage3Feedback);
-      var or = splitOR(stimuli[0].word);
-      $("#reveal .correct #onset").text(or.onset);
-      $("#reveal .correct #rime").text(or.rime);
+      var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+      var stimulus = reader.feedbackQueue[0].stimulus;
+      var onsetSelector = selector+ " #onset"; 
+      $(selector).html(stimHTMLStage3Feedback);
+      var or = splitOR(stimulus.word);
+      $(onsetSelector).text(or.onset);
+      $(selector+ " #rime").text(or.rime);
 
       // animate and sound out
       doSound(or.onset, "onset");
-      $("#reveal .correct #onset").css("color","#00FF00");
+      $(onsetSelector).css("color","#00FF00");
 
-      $("#reveal .correct #onset").animate({
+      $(onsetSelector).animate({
         /*
         "font-size": "200px",
             "bottom": "-10px"
@@ -1037,19 +1059,25 @@ function reader(user) {
       };
 
       this.feedbackStage3rime = function () {
+      var reader = app.cardReader[app.readerTurn];
 
-        $("#reveal .correct").html(stimHTMLStage3Feedback);
-        var or = splitOR(stimuli[0].word);
-        $("#reveal .correct #onset").text(or.onset);
-        $("#reveal .correct #rime").text(or.rime);
+      var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+      var stimulus = reader.feedbackQueue[0].stimulus;
+
+      var onsetSelector = selector+ " #onset"; 
+      var rimeSelector = selector+ " #rime"; 
+       $(selector).html(stimHTMLStage3Feedback);
+        var or = splitOR(stimulus.word);
+        $(onsetSelector).text(or.onset);
+        $(rimeSelector).text(or.rime);
 
         // animate and sound out
         doSound(or.rime, "rime");
-        $("#reveal .correct #onset").css("color","black");
-        $("#reveal .correct #rime").css("color","#00FF00");
+        $(onsetSelector).css("color","black");
+        $(rimeSelector).css("color","#00FF00");
 
 
-        $("#reveal .correct #rime").animate({
+        $(rimeSelector).animate({
 /*
           "font-size": "200px",
             "bottom": "-10px"
@@ -1066,12 +1094,19 @@ function reader(user) {
       };
 
       this.feedbackStage3word = function () {
+        var reader = app.cardReader[app.readerTurn];
+
         // restore the word html
-        $("#reveal .correct").html(stimHTMLStage3FeedbackWord);
-        $("#reveal .correct #word").text(stimuli[0].word);
+        var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+        var stimulus = reader.feedbackQueue[0].stimulus;
+
+        var wordSelector = selector + " #word";
+        $(selector).html(stimHTMLStage3FeedbackWord);
+        $(wordSelector).text(stimulus.word);
         // animate and sound out
-        doStimSound(doStage[stage].stim());
-        $("#reveal .correct #word").animate({
+        //doStimSound(doStage[stage].stim());
+        doStimSound(stimulus.word);
+        $(selector).animate({
           "font-size": "200px",
             "bottom": "-10px"
         }, "slow", app.cardReader[app.readerTurn].feedbackEnd);
