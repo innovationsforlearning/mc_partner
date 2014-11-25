@@ -8,6 +8,7 @@
 
 
 
+ var watchID=0;
  var login_html = "";
  var game_html = "";
  var review_html = "";
@@ -32,11 +33,11 @@
   var stimHTMLStage2 = "<div class='stage' id='stage2'><span id='onset'></span><span id='word'></span></div>";
   var stimHTMLStage3 = "<div class='stage' id='stage3'><div id='word'></div></div>";
 
-  //var stimHTMLStage3Incorrect = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
-  var stimHTMLStage3Incorrect = "<span id='onset'></span><span id='rime'></span>";
-  var stimHTMLStage3IncorrectWord = "<span id='word'></span>";
+  //var stimHTMLStage3Feedback = "<div id='stage3Incorrect'><div id='onset'></div><div id='rime'></div></div>";
+  var stimHTMLStage3Feedback = "<span id='onset'></span><span id='rime'></span>";
+  var stimHTMLStage3FeedbackWord = "<span id='word'></span>";
 
-  var stimReveal = "<div id='reveal'><div><span class='reveal_word' id='stim0'>Word0</span><span class='reveal_word' id='stim1'>Word1</span></div><div><span class='reveal_word' id='stim2'>Word2</span><span class='reveal_word' id='stim3'>Word3</span></div></div>"
+  var stimReveal = "<div id='reveal'><span class='reveal_word' id='stim0'>Word0</span><span class='reveal_word' id='stim1'>Word1</span><span class='reveal_word' id='stim2'>Word2</span><span class='reveal_word' id='stim3'>Word3</span></div>"
 
   var stimStage1 = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
@@ -70,9 +71,54 @@
       $("username").blur();
        $("pwd").blur();
   };
+  
 
+  var accelerometer = {
+    watchID: null,
+    x:0,
+    y:0,
+    z:0,
+    timestamp:0,
+    start: function(callback){
+      alert("accelerometer.start");
+      var options={frequency: 3000 };
+      accelerometer.watchID = navigator.accelerometer.watchAcceleration( function (acceleration) {
+        accelerometer.x = acceleration.x;
+        accelerometer.y = acceleration.y;
+        accelerometer.z = acceleration.z;
+        accelerometer.timestamp = acceleration.timestamp;
+        alert('Acceleration X: ' + acceleration.x + '\n' +
+          'Acceleration Y: ' + acceleration.y + '\n' +
+          'Acceleration Z: ' + acceleration.z + '\n' +
+          'Timestamp: '      + acceleration.timestamp + '\n');
+
+      }, 
+      function () {
+        alert("accelerometer error!")
+      }, 
+      options);
+    },
+    stop: function () {
+      if(accelerometer.watchID){
+        alert("accelerometer.stop");
+        navigator.accelerometer.clearWatch(accelerometer.watchID);
+        accelerometer.watchID=null;
+      }
+    }
+  }
 
   var app = {
+
+    /* maintain the state of the game */
+    state: {
+      current: 1,
+      WAIT_FOR_DEVICE_VERTICAL: 1,
+      WAIT_FOR_DEVICE_FLAT: 2,
+      WAIT_FOR_ANSWER: 3
+    },
+
+    /* watchID: holds the id of the accelerometer service */
+    watchID: null,
 
     teacher: {
       username: "",
@@ -627,6 +673,7 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         this.cardReader[this.readerTurn].nextStimulus();
+        app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
       }
 
 /* POC remove teacsherReview
@@ -657,6 +704,8 @@ function reader(user) {
 
     this.score = 0;
     this.correctStimuli = [];
+    this.revealStimuli = [];
+    this.feedbackQueue=[];
 
     var stimuli = [];
 
@@ -676,19 +725,56 @@ function reader(user) {
       init: initStage3,
       display: displayStage3,
       reveal: revealStage3,
-      incorrect: incorrectStage3,
+      feedback: feedbackStage3,
       stim: getStimStage3
     }];
     //
     // Public Methods
     //
 
+
+
     this.nextStimulus = function () {
       doStage[stage].display();
-      $("div.stage").click(function (){
-        doStage[stage].reveal();
-        //app.cardReader[app.readerTurn].reveal();
-      });
+      if (is_chrome){
+        $("#stimulus #word").css({opacity:1.0});
+       $("div.stage").one("click",function (event){
+          doStage[stage].reveal();
+          //app.cardReader[app.readerTurn].reveal();
+        });
+      }else{
+        var options={frequency: 500 };
+        if(accelerometer.watchID === null){
+          accelerometer.watchID = navigator.accelerometer.watchAcceleration( 
+          function (acceleration) {
+            /* success */
+            if(accelerometer.watchID){
+              switch (app.state.current) {
+                case app.state.WAIT_FOR_DEVICE_VERTICAL:
+                if( Math.abs(acceleration.x) > 9){
+                  $("#stimulus #word").css({opacity:1.0});
+                  app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
+                }
+                break;
+                case app.state.WAIT_FOR_DEVICE_FLAT:
+                if( Math.abs(acceleration.z) > 9){
+                  app.state.current = app.state.WAIT_FOR_ANSWER;
+                  /*accelerometer.stop();*/
+                  doStage[stage].reveal();
+                }
+                break;
+                default:
+                break;
+              }
+            }
+          }, 
+          function () {
+            /*failure */
+          },
+          options
+          );
+        }       
+      }
     };
 
     this.isStimCorrect = function (stim){
@@ -696,7 +782,8 @@ function reader(user) {
     }
 
     this.doCorrect = function () {
-        //
+         this.feedbackQueue=[{stimulus: stimuli[0], selector: ".correct"}];
+       //
         //! 4.1 A Listener can mark an answer as correct
         //
         //
@@ -707,11 +794,11 @@ function reader(user) {
         $("#score_label").text(++this.score);
         // add this stim to the correct list to review
         // IFF it is not already on the list
-        var stimulus = stimuli.shift();
+        var correctStimulus = stimuli.shift();
         //alert("doCorrect:stimulus:"+stimulus.word)
         //alert("doCorrect:correctStimuli.indexOf(stimulus):"+this.correctStimuli.indexOf(stimulus))
-        if(this.correctStimuli.indexOf(stimulus)===-1){
-          this.correctStimuli.push(stimulus);
+        if(this.correctStimuli.indexOf(correctStimulus)===-1){
+          this.correctStimuli.push(correctStimulus);
           //alert("doCorrect:correctStimuli:"+this.correctStimuli.join())
         }
         //
@@ -724,9 +811,11 @@ function reader(user) {
         if (stimuli.length === 0) {
           initStimuli();
         }
+        this.fadeIncorrect(doStage[stage].feedback);
+
       };
 
-      this.doIncorrect = function () {
+      this.doIncorrect = function (incorrectStimulus) {
         //
         //! 5.1 A Listener can mark a Reader response as incorrect
         //
@@ -739,11 +828,16 @@ function reader(user) {
         // each part is highlighted and sounded, and then the word is put back together 
         // and sounded as a whole word.)
         //
+        
 
-        this.fadeIncorrect(doStage[stage].incorrect);
+        this.feedbackQueue=[];
+  
+        this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
+        this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
+        this.fadeIncorrect(doStage[stage].feedback);
 
       };
-      this.finishIncorrect = function () {
+      this.finishFeedback = function () {
         stimuli.push(stimuli.shift());
       };
 
@@ -906,6 +1000,7 @@ function reader(user) {
         function displayStage3() {
           $("#stimulus").html(stimHTMLStage3);
           $("#stimulus #word").text(stimuli[0].word);
+          $("#stimulus #word").css({opacity:0});
 
         }
 
@@ -920,15 +1015,17 @@ function reader(user) {
         }
 
         function revealStage3() {
-          var words=[];
+
+          var reader =app.cardReader[app.readerTurn];
+          reader.revealStimuli=[];
           for(var i=0;i<3;i++){
-            words.push(stimuli[0].incorrect[i])
+            reader.revealStimuli.push(stimuli[0].incorrect[i])
           }
           var correctIndex=Math.floor(Math.random()*3);
-          words.splice(correctIndex,0,stimuli[0].word);
+          reader.revealStimuli.splice(correctIndex,0,stimuli[0].word);
           var stim=stimReveal.slice();
           for(var i=0;i<4;i++){
-            stim = stim.replace("Word"+i, words[i]);            
+            stim = stim.replace("Word"+i, reader.revealStimuli[i]);            
           }
           $("#stimulus").html(stim);
           for(var r=0;r<4;r++){
@@ -936,17 +1033,19 @@ function reader(user) {
             var stimClass;
             if(r===correctIndex){
               stimClass='correct';
-              $("#stim"+r).click(function (){
+              $("#stim"+r).one("click",function (){
                 app.cardReader[app.readerTurn].doCorrect();
-                app.nextReader();
+                //app.nextReader();
               });
 
             }else{
               stimClass='incorrect';
-              $("#stim"+r).click(function (){
+              $("#stim"+r).one("click",function (){
                 $(this).removeClass('incorrect');
                 $(this).addClass('selected');
-                app.cardReader[app.readerTurn].doIncorrect();
+                var i = parseInt($(this).attr("id").slice(-1));
+                var incorrectStim = app.cardReader[app.readerTurn].revealStimuli[i];
+                app.cardReader[app.readerTurn].doIncorrect(incorrectStim);
               });
 
             }
@@ -971,26 +1070,40 @@ function reader(user) {
 
         function incorrectStage1() {
           doStimSound(doStage[stage].stim());
-          app.cardReader[app.readerTurn].incorrectEnd();
+          app.cardReader[app.readerTurn].feedbackEnd();
         }
 
         function incorrectStage2() {
           doStimSound(doStage[stage].stim());
-          app.cardReader[app.readerTurn].incorrectEnd();
+          app.cardReader[app.readerTurn].feedbackEnd();
         }
 
         
-        function incorrectStage3() {
-          var callback = app.cardReader[app.readerTurn].incorrectEnd;
+        function feedbackStage3() {
+          var reader = app.cardReader[app.readerTurn];
+          var callback = reader.feedbackEnd;
         // if the word is an Onset Rime Word
-          if (stimuli[0].type === "or") {
-            callback = app.cardReader[app.readerTurn].incorrectStage3onset;
+        //  if (stimuli[0].type === "or") {
+          if (reader.feedbackQueue[0].stimulus.type === "or") {
+            callback = reader.feedbackStage3onset;
           }
           // highlight and say the word and then continue to split the word
-          doStimSound(doStage[stage].stim());
-          //$("#stage3 #word").animate({
-          $("#reveal .correct").animate({
-            "font-size": "200px",
+          //var stim = doStage[stage].stim();
+          var stim = reader.feedbackQueue[0].stimulus.word;
+          var selector = reader.feedbackQueue[0].selector;
+          doStimSound(stim);
+          var size = (stim.length < 5 ?'200px' :'150px');
+
+          var color;
+          if(selector === ".correct"){
+            color="#00FF00";
+           }else{
+            color = "#FF0000";
+          }
+          $(selector).css("color",color);
+
+          $("#reveal "+ selector).animate({
+            "font-size": size,
             "bottom": "-10px"
           }, "slow", function () {
              setTimeout(
@@ -1005,72 +1118,113 @@ function reader(user) {
     //
     // make callbacks public 
     //
-    this.incorrectStage3onset = function () {
+    this.feedbackStage3onset = function () {
+      var reader = app.cardReader[app.readerTurn];
+
       // split the onset and rime, highlight the onset and pronounce it
-      $("#reveal .correct").html(stimHTMLStage3Incorrect);
-      var or = splitOR(stimuli[0].word);
-      $("#reveal .correct #onset").text(or.onset);
-      $("#reveal .correct #rime").text(or.rime);
+      var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+      var stimulus = reader.feedbackQueue[0].stimulus;
+      var onsetSelector = selector+ " #onset"; 
+      $(selector).html(stimHTMLStage3Feedback);
+      var or = splitOR(stimulus.word);
+      $(onsetSelector).text(or.onset);
+      $(selector+ " #rime").text(or.rime);
 
       // animate and sound out
       doSound(or.onset, "onset");
-      $("#reveal .correct #onset").css("color","#00FF00");
+      $(selector).css("color","#000000");
+      $(onsetSelector).css("color","#FFFF00");
 
-      $("#reveal .correct #onset").animate({
+      $(onsetSelector).animate({
+        /*
         "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", function () {
+        */
+          "left": "1%"
+        }, "fast", function () {
 
            setTimeout(
             function () {
-               app.cardReader[app.readerTurn].incorrectStage3rime();
+               app.cardReader[app.readerTurn].feedbackStage3rime();
            }, 1000);
         });
+
+
+
       };
 
-      this.incorrectStage3rime = function () {
+      this.feedbackStage3rime = function () {
+      var reader = app.cardReader[app.readerTurn];
 
-        $("#reveal .correct").html(stimHTMLStage3Incorrect);
-        var or = splitOR(stimuli[0].word);
-        $("#reveal .correct #onset").text(or.onset);
-        $("#reveal .correct #rime").text(or.rime);
+      var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+      var stimulus = reader.feedbackQueue[0].stimulus;
+
+      var onsetSelector = selector+ " #onset"; 
+      var rimeSelector = selector+ " #rime"; 
+       $(selector).html(stimHTMLStage3Feedback);
+        var or = splitOR(stimulus.word);
+        $(onsetSelector).text(or.onset);
+        $(rimeSelector).text(or.rime);
 
         // animate and sound out
         doSound(or.rime, "rime");
-        $("#reveal .correct #onset").css("color","black");
-        $("#reveal .correct #rime").css("color","#00FF00");
-        $("#reveal .correct #rime").animate({
+        $(onsetSelector).css("color","black");
+        $(rimeSelector).css("color","#FFFF00");
+
+
+        $(rimeSelector).animate({
+/*
           "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", function () {
+*/
+          "right": "1%"
+        }, "fast", function () {
 
              setTimeout(
 
              function () {
-                 app.cardReader[app.readerTurn].incorrectStage3word();
+                 app.cardReader[app.readerTurn].feedbackStage3word();
              }, 1000);
          });
       };
 
-      this.incorrectStage3word = function () {
+      this.feedbackStage3word = function () {
+        var reader = app.cardReader[app.readerTurn];
+
         // restore the word html
-        $("#reveal .correct").html(stimHTMLStage3IncorrectWord);
-        $("#reveal .correct #word").text(stimuli[0].word);
+        var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+        var stimulus = reader.feedbackQueue[0].stimulus;
+
+        var wordSelector = selector + " #word";
+        $(selector).html(stimHTMLStage3FeedbackWord);
+        $(wordSelector).text(stimulus.word);
         // animate and sound out
-        doStimSound(doStage[stage].stim());
-        $("#reveal .correct #word").animate({
+        //doStimSound(doStage[stage].stim());
+        doStimSound(stimulus.word);
+        $(selector).animate({
           "font-size": "200px",
             "bottom": "-10px"
-        }, "slow", app.cardReader[app.readerTurn].incorrectEnd);
+        }, "slow", app.cardReader[app.readerTurn].feedbackEnd);
       };
 
 
-      this.incorrectEnd = function () {
-        app.cardReader[app.readerTurn].finishIncorrect();
+      this.feedbackEnd = function () {
+        var reader = app.cardReader[app.readerTurn];
+
+        reader.finishFeedback();
         // use closure to pass scope
-        setTimeout(function () {
-          app.nextReader();
-        }, 1000);
+        if(reader.feedbackQueue.length>1)
+        {
+          reader.feedbackQueue.shift();
+          setTimeout(function () {
+            var r = app.cardReader[app.readerTurn];
+            doStage[stage].feedback();
+          }, 1000);
+        }else{
+          setTimeout(function () {
+            app.nextReader();
+          }, 1000);
+        }
       };
 
       function splitOR(word) {

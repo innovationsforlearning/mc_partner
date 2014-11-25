@@ -15,6 +15,20 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.device-motion/www/Acceleration.js",
+        "id": "org.apache.cordova.device-motion.Acceleration",
+        "clobbers": [
+            "Acceleration"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.device-motion/www/accelerometer.js",
+        "id": "org.apache.cordova.device-motion.accelerometer",
+        "clobbers": [
+            "navigator.accelerometer"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [
@@ -165,6 +179,7 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "org.apache.cordova.media": "0.2.14",
+    "org.apache.cordova.device-motion": "0.2.10",
     "org.apache.cordova.file": "1.3.1"
 }
 // BOTTOM OF METADATA

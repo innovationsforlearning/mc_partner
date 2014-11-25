@@ -26,6 +26,9 @@
     <feature name="Media">
         <param name="ios-package" value="CDVSound" />
     </feature>
+    <feature name="Accelerometer">
+        <param name="ios-package" value="CDVAccelerometer" />
+    </feature>
     <name>MC-Partner</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.

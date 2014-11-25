@@ -8,6 +8,7 @@
 
 
 
+ var watchID=0;
  var login_html = "";
  var game_html = "";
  var review_html = "";
@@ -70,9 +71,54 @@
       $("username").blur();
        $("pwd").blur();
   };
+  
 
+  var accelerometer = {
+    watchID: null,
+    x:0,
+    y:0,
+    z:0,
+    timestamp:0,
+    start: function(callback){
+      alert("accelerometer.start");
+      var options={frequency: 3000 };
+      accelerometer.watchID = navigator.accelerometer.watchAcceleration( function (acceleration) {
+        accelerometer.x = acceleration.x;
+        accelerometer.y = acceleration.y;
+        accelerometer.z = acceleration.z;
+        accelerometer.timestamp = acceleration.timestamp;
+        alert('Acceleration X: ' + acceleration.x + '\n' +
+          'Acceleration Y: ' + acceleration.y + '\n' +
+          'Acceleration Z: ' + acceleration.z + '\n' +
+          'Timestamp: '      + acceleration.timestamp + '\n');
+
+      }, 
+      function () {
+        alert("accelerometer error!")
+      }, 
+      options);
+    },
+    stop: function () {
+      if(accelerometer.watchID){
+        alert("accelerometer.stop");
+        navigator.accelerometer.clearWatch(accelerometer.watchID);
+        accelerometer.watchID=null;
+      }
+    }
+  }
 
   var app = {
+
+    /* maintain the state of the game */
+    state: {
+      current: 1,
+      WAIT_FOR_DEVICE_VERTICAL: 1,
+      WAIT_FOR_DEVICE_FLAT: 2,
+      WAIT_FOR_ANSWER: 3
+    },
+
+    /* watchID: holds the id of the accelerometer service */
+    watchID: null,
 
     teacher: {
       username: "",
@@ -627,6 +673,7 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         this.cardReader[this.readerTurn].nextStimulus();
+        app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
       }
 
 /* POC remove teacsherReview
@@ -685,12 +732,49 @@ function reader(user) {
     // Public Methods
     //
 
+
+
     this.nextStimulus = function () {
       doStage[stage].display();
-      $("div.stage").one("click",function (event){
-        doStage[stage].reveal();
-        //app.cardReader[app.readerTurn].reveal();
-      });
+      if (is_chrome){
+        $("#stimulus #word").css({opacity:1.0});
+       $("div.stage").one("click",function (event){
+          doStage[stage].reveal();
+          //app.cardReader[app.readerTurn].reveal();
+        });
+      }else{
+        var options={frequency: 500 };
+        if(accelerometer.watchID === null){
+          accelerometer.watchID = navigator.accelerometer.watchAcceleration( 
+          function (acceleration) {
+            /* success */
+            if(accelerometer.watchID){
+              switch (app.state.current) {
+                case app.state.WAIT_FOR_DEVICE_VERTICAL:
+                if( Math.abs(acceleration.x) > 9){
+                  $("#stimulus #word").css({opacity:1.0});
+                  app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
+                }
+                break;
+                case app.state.WAIT_FOR_DEVICE_FLAT:
+                if( Math.abs(acceleration.z) > 9){
+                  app.state.current = app.state.WAIT_FOR_ANSWER;
+                  /*accelerometer.stop();*/
+                  doStage[stage].reveal();
+                }
+                break;
+                default:
+                break;
+              }
+            }
+          }, 
+          function () {
+            /*failure */
+          },
+          options
+          );
+        }       
+      }
     };
 
     this.isStimCorrect = function (stim){
@@ -916,6 +1000,7 @@ function reader(user) {
         function displayStage3() {
           $("#stimulus").html(stimHTMLStage3);
           $("#stimulus #word").text(stimuli[0].word);
+          $("#stimulus #word").css({opacity:0});
 
         }
 
@@ -930,6 +1015,7 @@ function reader(user) {
         }
 
         function revealStage3() {
+
           var reader =app.cardReader[app.readerTurn];
           reader.revealStimuli=[];
           for(var i=0;i<3;i++){
