@@ -1048,7 +1048,9 @@ function reader(user) {
  
 
           }
-          //$("#stimulus #word").text(stimuli[0].word);
+          $("#reveal").animate({
+            "opacity": 1,
+          }, "slow");
         }
 
         function getStimStage1() {
@@ -1207,17 +1209,25 @@ function reader(user) {
         var reader = app.cardReader[app.readerTurn];
 
         reader.finishFeedback();
+
         // use closure to pass scope
         if(reader.feedbackQueue.length>1)
         {
           reader.feedbackQueue.shift();
           setTimeout(function () {
+        //$("#reveal").animate({"opacity": 0}, "slow");
+
             var r = app.cardReader[app.readerTurn];
             doStage[stage].feedback();
           }, 1000);
         }else{
           setTimeout(function () {
-            app.nextReader();
+            $("#reveal").animate({"opacity": 0}, "slow", function () {
+              app.nextReader();
+              $("#reveal").animate({"opacity": 1}, "slow");
+            });
+
+            //app.nextReader();
           }, 1000);
         }
       };
