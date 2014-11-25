@@ -100,7 +100,6 @@
     },
     stop: function () {
       if(accelerometer.watchID){
-        alert("accelerometer.stop");
         navigator.accelerometer.clearWatch(accelerometer.watchID);
         accelerometer.watchID=null;
       }
@@ -672,8 +671,8 @@
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
-        this.cardReader[this.readerTurn].nextStimulus();
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
+        this.cardReader[this.readerTurn].nextStimulus();
       }
 
 /* POC remove teacsherReview
@@ -759,7 +758,7 @@ function reader(user) {
                 case app.state.WAIT_FOR_DEVICE_FLAT:
                 if( Math.abs(acceleration.z) > 9){
                   app.state.current = app.state.WAIT_FOR_ANSWER;
-                  /*accelerometer.stop();*/
+                  accelerometer.stop();
                   doStage[stage].reveal();
                 }
                 break;
@@ -1240,7 +1239,7 @@ function reader(user) {
     //
 
     initStimuli();
-    this.nextStimulus();
+    //this.nextStimulus();
 
   }
 /* POC remove teacherReview
