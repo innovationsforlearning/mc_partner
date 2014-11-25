@@ -177,15 +177,15 @@ body {
 ** Game board
 */
 #game_container {
-    background:#2a1e8f;
+    background:#CCC;
 }
 #game_board {
-    background:#806cee;
+    background:#888;
     position:absolute;
-    top: 2%;
-    left: 2%;
-    height:96%;
-    width:96%;
+    top: 1%;
+    left: 1%;
+    height:99%;
+    width:99%;
 }
 #game_header {
     display: none;
@@ -241,12 +241,12 @@ body {
 #stimulus {
     /*border: 2px solid black;*/
     color: #000000;
-    background: white;
+    background: #CCC;
     position: absolute;
-    width: 96%;
-    height: 96%;
-    top: 2%;
-    left: 2%;
+    width: 100%;
+    height: 100%;
+    top: 0%;
+    left: 0%;
     text-align: center;
     font-family: instructionalFont;
     font-size: 200px;
@@ -289,7 +289,7 @@ body {
 }
 */
 #reveal {
-    background: red;
+    background: #CCC;
 
     position: absolute;
     font-size: 125px;
@@ -300,7 +300,6 @@ body {
 }
 
 #reveal #stim0 {
-    background: 'yellow';
     position: absolute;
     width: 48%;
     height: 48%;
@@ -308,7 +307,6 @@ body {
     left:0%;
 }
 #reveal #stim1 {
-    background: 'yellow';
     position: absolute;
     width: 48%;
     height: 48%;
@@ -316,7 +314,6 @@ body {
     right:0%;
 }
 #reveal #stim2 {
-    background: 'yellow';
     position: absolute;
     width: 48%;
     height: 48%;
@@ -324,7 +321,6 @@ body {
     left:0%;
 }
 #reveal #stim3 {
-    background: 'yellow';
     position: absolute;
     width: 48%;
     height: 48%;
@@ -335,7 +331,6 @@ body {
 .reveal_word {
     position: relative;
     margin: 48%, 48%;
-    background-color: 'yellow';
     border: 2px dashed blue;
 }
 .reveal_word #onset{

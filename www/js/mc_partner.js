@@ -1004,12 +1004,19 @@ function reader(user) {
           // highlight and say the word and then continue to split the word
           //var stim = doStage[stage].stim();
           var stim = reader.feedbackQueue[0].stimulus.word;
-          var selector = "#reveal "+ reader.feedbackQueue[0].selector;
+          var selector = reader.feedbackQueue[0].selector;
           doStimSound(stim);
           var size = (stim.length < 5 ?'200px' :'150px');
 
-          //$("#reveal .correct").animate({
-          $(selector).animate({
+          var color;
+          if(selector === ".correct"){
+            color="#00FF00";
+           }else{
+            color = "#FF0000";
+          }
+          $(selector).css("color",color);
+
+          $("#reveal "+ selector).animate({
             "font-size": size,
             "bottom": "-10px"
           }, "slow", function () {
@@ -1039,7 +1046,8 @@ function reader(user) {
 
       // animate and sound out
       doSound(or.onset, "onset");
-      $(onsetSelector).css("color","#00FF00");
+      $(selector).css("color","#000000");
+      $(onsetSelector).css("color","#FFFF00");
 
       $(onsetSelector).animate({
         /*
@@ -1075,7 +1083,7 @@ function reader(user) {
         // animate and sound out
         doSound(or.rime, "rime");
         $(onsetSelector).css("color","black");
-        $(rimeSelector).css("color","#00FF00");
+        $(rimeSelector).css("color","#FFFF00");
 
 
         $(rimeSelector).animate({
