@@ -251,6 +251,11 @@ body {
     font-family: instructionalFont;
     font-size: 200px;
     vertical-align: middle;
+    text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
 
 }
 .stage {
@@ -331,17 +336,14 @@ body {
 .reveal_word {
     position: relative;
     margin: 48%, 48%;
-    border: 2px dashed blue;
 }
 .reveal_word #onset{
-   border: 2px dashed red;
     position: absolute;
     z-index: 0;
     left: 10%;
     vertical-align: middle;
 }
 .reveal_word #rime{
-  border: 2px dashed green;
     position: absolute;
     z-index: 1;
     right: 10%;

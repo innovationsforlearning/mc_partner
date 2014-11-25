@@ -75,29 +75,6 @@
 
   var accelerometer = {
     watchID: null,
-    x:0,
-    y:0,
-    z:0,
-    timestamp:0,
-    start: function(callback){
-      alert("accelerometer.start");
-      var options={frequency: 3000 };
-      accelerometer.watchID = navigator.accelerometer.watchAcceleration( function (acceleration) {
-        accelerometer.x = acceleration.x;
-        accelerometer.y = acceleration.y;
-        accelerometer.z = acceleration.z;
-        accelerometer.timestamp = acceleration.timestamp;
-        alert('Acceleration X: ' + acceleration.x + '\n' +
-          'Acceleration Y: ' + acceleration.y + '\n' +
-          'Acceleration Z: ' + acceleration.z + '\n' +
-          'Timestamp: '      + acceleration.timestamp + '\n');
-
-      }, 
-      function () {
-        alert("accelerometer error!")
-      }, 
-      options);
-    },
     stop: function () {
       if(accelerometer.watchID){
         navigator.accelerometer.clearWatch(accelerometer.watchID);
@@ -114,6 +91,13 @@
       WAIT_FOR_DEVICE_VERTICAL: 1,
       WAIT_FOR_DEVICE_FLAT: 2,
       WAIT_FOR_ANSWER: 3
+    },
+
+    COLORS: {
+      RED: "#ff6057",
+      GREEN: "#27c93f",
+      YELLOW: "#ffbd2e",
+      BLUE: "#2757FF"
     },
 
     /* watchID: holds the id of the accelerometer service */
@@ -756,7 +740,7 @@ function reader(user) {
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
-                if( Math.abs(acceleration.z) > 9){
+                if( Math.abs(acceleration.z) > 4){
                   app.state.current = app.state.WAIT_FOR_ANSWER;
                   accelerometer.stop();
                   doStage[stage].reveal();
@@ -1027,6 +1011,18 @@ function reader(user) {
             stim = stim.replace("Word"+i, reader.revealStimuli[i]);            
           }
           $("#stimulus").html(stim);
+
+          var colors=[];
+          for (var color in app.COLORS) {
+            if (app.COLORS.hasOwnProperty(color)) {
+                colors.push(app.COLORS[color]);
+            }
+          }
+          colors= randomize(colors);
+          for(var i=0; i<4; i++){
+            $("#stim"+i).css({"background": colors[i]});
+          }
+
           for(var r=0;r<4;r++){
 
             var stimClass;
