@@ -75,6 +75,9 @@
 
   var accelerometer = {
     watchID: null,
+    start: function(success, error, options){
+      accelerometer.watchID = navigator.accelerometer.watchAcceleration( success, error, options);
+    },
     stop: function () {
       if(accelerometer.watchID){
         navigator.accelerometer.clearWatch(accelerometer.watchID);
@@ -82,6 +85,8 @@
       }
     }
   }
+
+
 
   var app = {
 
@@ -728,7 +733,8 @@ function reader(user) {
       }else{
         var options={frequency: 500 };
         if(accelerometer.watchID === null){
-          accelerometer.watchID = navigator.accelerometer.watchAcceleration( 
+          //accelerometer.watchID = navigator.accelerometer.watchAcceleration( 
+          accelerometer.start(
           function (acceleration) {
             /* success */
             if(accelerometer.watchID){
