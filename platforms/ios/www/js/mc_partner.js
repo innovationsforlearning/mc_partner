@@ -99,7 +99,7 @@
         PUT_DOWN_THE_IPAD : "PUT_DOWN_THE_IPAD" , //  When you have read the word, place the iPad flat in front of you again.
         ON_SCREEN_FACING_DOWN : "ON_SCREEN_FACING_DOWN" , //  Turn me over please!
         SELECT_STIMULUS  : "SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
-        ON_CORRECT_SELECTION  : "ON_CORRECT_SELECTION" , //  [partner] The right answer was [ANSWER]
+        CORRECT_STIMULUS  : "CORRECT_STIMULUS" , //  [partner] The right answer was [ANSWER]
         ON_INCORRECT_SELECTION  : "ON_INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
 
         partners: [],
@@ -875,8 +875,13 @@ function reader(user) {
         if (stimuli.length === 0) {
           initStimuli();
         }
-        this.fadeIncorrect(doStage[stage].feedback);
-
+        //this.fadeIncorrect(doStage[stage].feedback);
+        this.fadeIncorrect(function () {
+          app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
+            function () {
+              doStage[stage].feedback();
+            }, null);
+        });
       };
 
       this.doIncorrect = function (incorrectStimulus) {
