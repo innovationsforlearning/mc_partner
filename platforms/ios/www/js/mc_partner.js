@@ -1306,26 +1306,20 @@ function reader(user) {
         if(reader.feedbackQueue.length>1)
         {
           reader.feedbackQueue.shift();
-
-
-
           app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
             function () {
-          setTimeout(function () {
+              setTimeout(function () {
         //$("#reveal").animate({"opacity": 0}, "slow");
-
-            var r = app.cardReader[app.readerTurn];
-            doStage[stage].feedback();
-          }, 1000);
-            }, null);
+              var r = app.cardReader[app.readerTurn];
+              doStage[stage].feedback();
+            }, 1000);
+          }, null);
         }else{
           setTimeout(function () {
             $("#reveal").animate({"opacity": 0}, "slow", function () {
               app.nextReader();
-              $("#reveal").animate({"opacity": 1}, "slow");
+              //$("#reveal").animate({"opacity": 1}, "slow");
             });
-
-            //app.nextReader();
           }, 1000);
         }
       };
