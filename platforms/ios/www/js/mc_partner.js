@@ -110,9 +110,7 @@
         // id can be a string or an array of strings to queue audio
         start: function(id, repeat_delay, onSuccess, onError){
           this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
-          alert("prompt.start:"+id[0]+id[1])
-          //if (is_chrome) {
-          if (false) {
+          if (is_chrome) {
             onSuccess();
           } else {
             this.index=0;
@@ -122,7 +120,6 @@
               this.userOnError = onError;
             }else{
               this.userError = function() {
-                alert("Error playing sound: " );
               }
             }
             this.doPlay();
@@ -135,11 +132,9 @@
           if(this.index<this.id.length){
             var src;
             src = "snd/prompt/_id_.mp3".replace("_id_", this.id[this.index++]);
-            alert("doPlay:"+this.index+":"+src);
             var media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
             media.play();
           }else{
-            alert("doPlay:success");
             this.userOnSuccess();
           }
         }
@@ -801,6 +796,8 @@ function reader(user) {
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
                   app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
+                  app.prompt.start([app.prompt.READ_THE_WORD], 0, null, null);
+
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
