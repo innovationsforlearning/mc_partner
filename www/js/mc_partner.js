@@ -98,7 +98,7 @@
         READ_THE_WORD : "READ_THE_WORD" , //  Great! Now read the word you see out loud so your partner can hear it. 
         PUT_DOWN_THE_IPAD : "PUT_DOWN_THE_IPAD" , //  When you have read the word, place the iPad flat in front of you again.
         ON_SCREEN_FACING_DOWN : "ON_SCREEN_FACING_DOWN" , //  Turn me over please!
-        ON_SELECT_STIMULUS  : "ON_SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
+        SELECT_STIMULUS  : "SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
         ON_CORRECT_SELECTION  : "ON_CORRECT_SELECTION" , //  [partner] The right answer was [ANSWER]
         ON_INCORRECT_SELECTION  : "ON_INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
 
@@ -107,6 +107,7 @@
         userOnError: null,
         index: 0,
         id: [],
+        media: null,
         // id can be a string or an array of strings to queue audio
         start: function(id, repeat_delay, onSuccess, onError){
           this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
@@ -125,15 +126,21 @@
             this.doPlay();
           }
         },
-        stop: function(){
-
+        stop: function(callback, delay){
+          if(this.media){
+            this.media.stop();
+          }
+          if(callback){
+            setTimeout(callback, delay);
+          }
         },
         doPlay: function(){
           if(this.index<this.id.length){
+
             var src;
             src = "snd/prompt/_id_.mp3".replace("_id_", this.id[this.index++]);
-            var media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
-            media.play();
+            this.media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
+            this.media.play();
           }else{
             this.userOnSuccess();
           }
@@ -811,6 +818,13 @@ function reader(user) {
                   app.state.current = app.state.WAIT_FOR_ANSWER;
                   accelerometer.stop();
                   doStage[stage].reveal();
+
+                  app.prompt.stop(function () {
+                    app.prompt.start([app.prompt.partners[(app.readerTurn+1)%2], app.prompt.SELECT_STIMULUS], 0, null, null);
+
+                  }, 2000);
+
+                  
                 }
                 break;
                 default:
