@@ -102,20 +102,46 @@
         ON_CORRECT_SELECTION  : "ON_CORRECT_SELECTION" , //  [partner] The right answer was [ANSWER]
         ON_INCORRECT_SELECTION  : "ON_INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
 
+        partners: [],
         userOnSuccess: null,
+        userOnError: null,
+        index: 0,
+        id: [],
         // id can be a string or an array of strings to queue audio
         start: function(id, repeat_delay, onSuccess, onError){
-          if (is_chrome) {
+          this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
+          alert("prompt.start:"+id[0]+id[1])
+          //if (is_chrome) {
+          if (false) {
             onSuccess();
           } else {
-            var src;
-            src = "snd/prompt/_id_.mp3".replace("_id_", id);
-            var media = new Media(src, onSuccess, onError);
-            media.play();
+            this.index=0;
+            this.id=id;
+            this.userOnSuccess=onSuccess;
+            if(onError!=null){
+              this.userOnError = onError;
+            }else{
+              this.userError = function() {
+                alert("Error playing sound: " );
+              }
+            }
+            this.doPlay();
           }
         },
         stop: function(){
 
+        },
+        doPlay: function(){
+          if(this.index<this.id.length){
+            var src;
+            src = "snd/prompt/_id_.mp3".replace("_id_", this.id[this.index++]);
+            alert("doPlay:"+this.index+":"+src);
+            var media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
+            media.play();
+          }else{
+            alert("doPlay:success");
+            this.userOnSuccess();
+          }
         }
       },
 
@@ -667,7 +693,7 @@
         });
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
-        this.prompt.start(this.prompt.ON_STARTUP, 0, function () {app.nextReader();}, null);
+        this.prompt.start([this.prompt.ON_INTRO], 0, function () {app.nextReader();}, null);
         
         // app.nextReader();
 
@@ -692,7 +718,9 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
-        this.cardReader[this.readerTurn].nextStimulus();
+        this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, function () {app.cardReader[app.readerTurn].nextStimulus();}, null);
+
+        // this.cardReader[this.readerTurn].nextStimulus();
       }
 
 /* POC remove teacsherReview

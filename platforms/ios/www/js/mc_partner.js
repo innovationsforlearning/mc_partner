@@ -86,9 +86,64 @@
     }
   }
 
+    var app = {
 
+      prompt: {
+        ON_VERTICAL_STARTUP : "ON_VERTICAL_STARTUP" , //  Please place the iPad flat in front of you to begin.
+        ON_STARTUP  : "ON_STARTUP" , //  Welcome to MC Partner. Is this the first time you have played? Tap the green Yes or the red No
+        ON_INTRO  : "ON_INTRO" , //  This game will help you learn with your partner. One of you will be the red partner and one will be the blue partner. You decide!
+        BLUE_PARTNER  : "BLUE_PARTNER" , //  Blue Partner
+        RED_PARTNER : "RED_PARTNER" , //  Red Partner
+        PICK_UP_IPAD  : "PICK_UP_IPAD" , //  [partner] pick up the iPad and hold it so you can see my face but your partner can't.
+        READ_THE_WORD : "READ_THE_WORD" , //  Great! Now read the word you see out loud so your partner can hear it. 
+        PUT_DOWN_THE_IPAD : "PUT_DOWN_THE_IPAD" , //  When you have read the word, place the iPad flat in front of you again.
+        ON_SCREEN_FACING_DOWN : "ON_SCREEN_FACING_DOWN" , //  Turn me over please!
+        ON_SELECT_STIMULUS  : "ON_SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
+        ON_CORRECT_SELECTION  : "ON_CORRECT_SELECTION" , //  [partner] The right answer was [ANSWER]
+        ON_INCORRECT_SELECTION  : "ON_INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
 
-  var app = {
+        partners: [],
+        userOnSuccess: null,
+        userOnError: null,
+        index: 0,
+        id: [],
+        // id can be a string or an array of strings to queue audio
+        start: function(id, repeat_delay, onSuccess, onError){
+          this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
+          alert("prompt.start:"+id[0]+id[1])
+          //if (is_chrome) {
+          if (false) {
+            onSuccess();
+          } else {
+            this.index=0;
+            this.id=id;
+            this.userOnSuccess=onSuccess;
+            if(onError!=null){
+              this.userOnError = onError;
+            }else{
+              this.userError = function() {
+                alert("Error playing sound: " );
+              }
+            }
+            this.doPlay();
+          }
+        },
+        stop: function(){
+
+        },
+        doPlay: function(){
+          if(this.index<this.id.length){
+            var src;
+            src = "snd/prompt/_id_.mp3".replace("_id_", this.id[this.index++]);
+            alert("doPlay:"+this.index+":"+src);
+            var media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
+            media.play();
+          }else{
+            alert("doPlay:success");
+            this.userOnSuccess();
+          }
+        }
+      },
 
     /* maintain the state of the game */
     state: {
@@ -638,7 +693,9 @@
         });
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
-        app.nextReader();
+        this.prompt.start([this.prompt.ON_INTRO], 0, function () {app.nextReader();}, null);
+        
+        // app.nextReader();
 
       },
 
@@ -661,7 +718,9 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
-        this.cardReader[this.readerTurn].nextStimulus();
+        this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, function () {app.cardReader[app.readerTurn].nextStimulus();}, null);
+
+        // this.cardReader[this.readerTurn].nextStimulus();
       }
 
 /* POC remove teacsherReview
@@ -733,7 +792,6 @@ function reader(user) {
       }else{
         var options={frequency: 500 };
         if(accelerometer.watchID === null){
-          //accelerometer.watchID = navigator.accelerometer.watchAcceleration( 
           accelerometer.start(
           function (acceleration) {
             /* success */
