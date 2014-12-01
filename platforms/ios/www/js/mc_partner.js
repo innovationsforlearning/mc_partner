@@ -796,8 +796,14 @@ function reader(user) {
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
                   app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
-                  app.prompt.start([app.prompt.READ_THE_WORD], 0, null, null);
-
+                  app.prompt.start([app.prompt.READ_THE_WORD], 0, 
+                    function() {
+                      setTimeout(function (){
+                        if(app.state.current === app.state.WAIT_FOR_DEVICE_FLAT){
+                          app.prompt.start([app.prompt.PUT_DOWN_THE_IPAD], 0, null, null);
+                        }
+                      }, 3000);
+                    }, null);
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
