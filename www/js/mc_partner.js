@@ -816,8 +816,9 @@ function reader(user) {
                 case app.state.WAIT_FOR_DEVICE_VERTICAL:
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
-                  app.prompt.stop();
+                  //app.prompt.stop();
                   app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
+/*
                   app.prompt.start([app.prompt.READ_THE_WORD], 0, 
                     function() {
                       setTimeout(function (){
@@ -826,6 +827,9 @@ function reader(user) {
                         }
                       }, 5000);
                     }, null);
+
+*/
+                  app.prompt.start([app.prompt.READ_THE_WORD, app.prompt.PUT_DOWN_THE_IPAD], 0, null, null);
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
