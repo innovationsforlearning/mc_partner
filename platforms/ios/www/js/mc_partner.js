@@ -100,29 +100,30 @@
         ON_SCREEN_FACING_DOWN : "ON_SCREEN_FACING_DOWN" , //  Turn me over please!
         SELECT_STIMULUS  : "SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
         CORRECT_STIMULUS  : "CORRECT_STIMULUS" , //  [partner] The right answer was [ANSWER]
-        ON_INCORRECT_SELECTION  : "ON_INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
+        INCORRECT_SELECTION  : "INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
 
         partners: [],
         userOnSuccess: null,
         userOnError: null,
         index: 0,
-        id: [],
+        queue: [],
         media: null,
-        // id can be a string or an array of strings to queue audio
-        start: function(id, repeat_delay, onSuccess, onError){
+        queue_delay: null,
+        // queue: an array of strings to queue audio
+        // queue_delay: delay in ms before next element is triggered
+        start: function(queue, queue_delay, onSuccess, onError){
           this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
           if (is_chrome) {
-            onSuccess();
+            if(onSuccess){onSuccess();}
+            
           } else {
             this.index=0;
-            this.id=id;
-            this.userOnSuccess=onSuccess;
-            if(onError!=null){
-              this.userOnError = onError;
-            }else{
-              this.userError = function() {
-              }
-            }
+            this.queue=queue;
+            this.queue_delay=queue_delay;
+            
+            this.userOnSuccess=(onSuccess? onSuccess: function (){});
+            this.userOnError=(onSuccess? onError: function (){});
+
             this.doPlay();
           }
         },
@@ -130,16 +131,27 @@
           if(this.media){
             this.media.stop();
           }
+          // clear the queue
+          this.queue=[];
+          this.index=0;
+
           if(callback){
             setTimeout(callback, delay);
           }
         },
         doPlay: function(){
-          if(this.index<this.id.length){
+          if(this.index<this.queue.length){
 
             var src;
-            src = "snd/prompt/_id_.mp3".replace("_id_", this.id[this.index++]);
-            this.media = new Media(src, function () {app.prompt.doPlay();}, this.userOnError);
+            src = "snd/prompt/_id_.mp3".replace("_id_", this.queue[this.index++]);
+            this.media = new Media(src, function () {
+              if(this.queue_delay)
+              {
+                setTimeout(function () {app.prompt.doPlay();}, this.queue_delay);
+              }else{
+                app.prompt.doPlay();                
+              }
+            }, this.userOnError);
             this.media.play();
           }else{
             this.userOnSuccess();
@@ -720,7 +732,9 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
-        this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, function () {app.cardReader[app.readerTurn].nextStimulus();}, null);
+        //this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, function () {app.cardReader[app.readerTurn].nextStimulus();}, null);
+        app.cardReader[app.readerTurn].nextStimulus();
+        this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, null, null);
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
@@ -802,6 +816,7 @@ function reader(user) {
                 case app.state.WAIT_FOR_DEVICE_VERTICAL:
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
+                  app.prompt.stop();
                   app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
                   app.prompt.start([app.prompt.READ_THE_WORD], 0, 
                     function() {
@@ -809,7 +824,7 @@ function reader(user) {
                         if(app.state.current === app.state.WAIT_FOR_DEVICE_FLAT){
                           app.prompt.start([app.prompt.PUT_DOWN_THE_IPAD], 0, null, null);
                         }
-                      }, 3000);
+                      }, 5000);
                     }, null);
                 }
                 break;
@@ -876,6 +891,7 @@ function reader(user) {
           initStimuli();
         }
         //this.fadeIncorrect(doStage[stage].feedback);
+        app.prompt.stop();
         this.fadeIncorrect(function () {
           app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
             function () {
@@ -904,6 +920,8 @@ function reader(user) {
         this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
         this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
         //this.fadeIncorrect(doStage[stage].feedback);
+        app.prompt.stop();
+
         this.fadeIncorrect(function () {
           app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
             function () {
@@ -1121,6 +1139,7 @@ function reader(user) {
             if(r===correctIndex){
               stimClass='correct';
               $("#stim"+r).one("click",function (){
+                $("span").off("#reveal");
                 app.cardReader[app.readerTurn].doCorrect();
                 //app.nextReader();
               });
@@ -1128,7 +1147,8 @@ function reader(user) {
             }else{
               stimClass='incorrect';
               $("#stim"+r).one("click",function (){
-                $(this).removeClass('incorrect');
+                $("span").off("#reveal");
+                 $(this).removeClass('incorrect');
                 $(this).addClass('selected');
                 var i = parseInt($(this).attr("id").slice(-1));
                 var incorrectStim = app.cardReader[app.readerTurn].revealStimuli[i];
@@ -1306,7 +1326,7 @@ function reader(user) {
         if(reader.feedbackQueue.length>1)
         {
           reader.feedbackQueue.shift();
-          app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
+          app.prompt.start([app.prompt.INCORRECT_SELECTION], 0, 
             function () {
               setTimeout(function () {
         //$("#reveal").animate({"opacity": 0}, "slow");
@@ -1320,7 +1340,7 @@ function reader(user) {
               app.nextReader();
               //$("#reveal").animate({"opacity": 1}, "slow");
             });
-          }, 1000);
+          }, 500);
         }
       };
 
