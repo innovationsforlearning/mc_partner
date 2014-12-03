@@ -86,78 +86,54 @@
     }
   }
 
-    var app = {
+// audio prompts
+p_ON_VERTICAL_STARTUP = "ON_VERTICAL_STARTUP"; //  Please place the iPad flat in front of you to begin.
+p_ON_STARTUP  = "ON_STARTUP"; //  Welcome to MC Partner. Is this the first time you have played? Tap the green Yes or the red No
+p_ON_INTRO  = "ON_INTRO"; //  This game will help you learn with your partner. One of you will be the red partner and one will be the blue partner. You decide!
+p_RED_PICK_UP_IPAD  = "RED_PICK_UP_IPAD"; //  Red partner now pick up the iPad and hold it so you can see my face but your partner can't.
+p_BLUE_PICK_UP_IPAD = "BLUE_PICK_UP_IPAD"; //  Blue partner now pick up the iPad and hold it so you can see my face but your partner can't.
+p_READ_THE_WORD = "READ_THE_WORD"; //  Great! Now read the word you see out loud so your partner can hear it. When you have read the word, place the iPad flat in front of you again.
+p_PUT_DOWN_THE_IPAD = "PUT_DOWN_THE_IPAD"; //  When you have read the word, place the iPad flat in front of you again.
+p_RED_SELECT_STIMULUS = "RED_SELECT_STIMULUS"; //  Red partner now find the word your partner read to you and tap it with your finger.
+p_BLUE_SELECT_STIMULUS  = "BLUE_SELECT_STIMULUS"; //  Blue partner now find the word your partner read to you and tap it with your finger.
+p_CORRECT_STIMULUS  = "CORRECT_STIMULUS"; //  The right answer was [ANSWER]
+p_INCORRECT_SELECTION = "INCORRECT_SELECTION"; //  The word you chose was [ANSWER]
+p_CORRECT_SELECTION = "CORRECT_SELECTION"; //  Great! The right answer was [ANSWER]
+p_PICK_UP_IPAD = [p_RED_PICK_UP_IPAD, p_BLUE_PICK_UP_IPAD];
+p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
-      prompt: {
-        ON_VERTICAL_STARTUP : "ON_VERTICAL_STARTUP" , //  Please place the iPad flat in front of you to begin.
-        ON_STARTUP  : "ON_STARTUP" , //  Welcome to MC Partner. Is this the first time you have played? Tap the green Yes or the red No
-        ON_INTRO  : "ON_INTRO" , //  This game will help you learn with your partner. One of you will be the red partner and one will be the blue partner. You decide!
-        BLUE_PARTNER  : "BLUE_PARTNER" , //  Blue Partner
-        RED_PARTNER : "RED_PARTNER" , //  Red Partner
-        PICK_UP_IPAD  : "PICK_UP_IPAD" , //  [partner] pick up the iPad and hold it so you can see my face but your partner can't.
-        READ_THE_WORD : "READ_THE_WORD" , //  Great! Now read the word you see out loud so your partner can hear it. 
-        PUT_DOWN_THE_IPAD : "PUT_DOWN_THE_IPAD" , //  When you have read the word, place the iPad flat in front of you again.
-        ON_SCREEN_FACING_DOWN : "ON_SCREEN_FACING_DOWN" , //  Turn me over please!
-        SELECT_STIMULUS  : "SELECT_STIMULUS" , //  [partner] find the word your partner read to you and tap it with your finger.
-        CORRECT_STIMULUS  : "CORRECT_STIMULUS" , //  [partner] The right answer was [ANSWER]
-        INCORRECT_SELECTION  : "INCORRECT_SELECTION",   //  [partner] the word you chose was [ANSWER]
+      function prompt() {
 
-        partners: [],
-        userOnSuccess: null,
-        userOnError: null,
-        index: 0,
-        queue: [],
-        media: null,
-        queue_delay: null,
+        this.media = null;
         // queue: an array of strings to queue audio
         // queue_delay: delay in ms before next element is triggered
-        start: function(queue, queue_delay, onSuccess, onError){
-          this.partners= [this.RED_PARTNER, this.BLUE_PARTNER];
+         this.start = function(id, onSuccess, onError){
+
           if (is_chrome) {
             if(onSuccess){onSuccess();}
             
           } else {
-            this.index=0;
-            this.queue=queue;
-            this.queue_delay=queue_delay;
-            
-            this.userOnSuccess=(onSuccess? onSuccess: function (){});
-            this.userOnError=(onSuccess? onError: function (){});
+        // OnSuccess is executed after each successful play, record or stop
 
-            this.doPlay();
+            var src = "snd/prompt/_id_.mp3".replace("_id_", id);
+            this.media = new Media(src, onSuccess, onError);
+            this.media.play();
           }
-        },
-        stop: function(callback, delay){
+        };
+        this.stop = function(callback, delay){
+
           if(this.media){
             this.media.stop();
           }
-          // clear the queue
-          this.queue=[];
-          this.index=0;
 
           if(callback){
             setTimeout(callback, delay);
           }
-        },
-        doPlay: function(){
-          if(this.index<this.queue.length){
+        };
 
-            var src;
-            src = "snd/prompt/_id_.mp3".replace("_id_", this.queue[this.index++]);
-            this.media = new Media(src, function () {
-              if(this.queue_delay)
-              {
-                setTimeout(function () {app.prompt.doPlay();}, this.queue_delay);
-              }else{
-                app.prompt.doPlay();                
-              }
-            }, this.userOnError);
-            this.media.play();
-          }else{
-            this.userOnSuccess();
-          }
-        }
-      },
+    }
+
+    var app = {
 
     /* maintain the state of the game */
     state: {
@@ -707,7 +683,8 @@
         });
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
-        this.prompt.start([this.prompt.ON_INTRO], 0, function () {app.nextReader();}, null);
+        pv_ON_INTRO = new prompt();
+        pv_ON_INTRO.start(p_ON_INTRO, function () {app.nextReader();}, null);
         
         // app.nextReader();
 
@@ -732,9 +709,9 @@
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
-        //this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, function () {app.cardReader[app.readerTurn].nextStimulus();}, null);
         app.cardReader[app.readerTurn].nextStimulus();
-        this.prompt.start([this.prompt.partners[this.readerTurn], this.prompt.PICK_UP_IPAD], 0, null, null);
+        pv_PICK_UP_IPAD = new prompt();
+        pv_PICK_UP_IPAD.start(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
@@ -816,7 +793,8 @@ function reader(user) {
                 case app.state.WAIT_FOR_DEVICE_VERTICAL:
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
-                  //app.prompt.stop();
+
+                  pv_PICK_UP_IPAD.stop();
                   app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
 /*
                   app.prompt.start([app.prompt.READ_THE_WORD], 0, 
@@ -829,7 +807,9 @@ function reader(user) {
                     }, null);
 
 */
-                  app.prompt.start([app.prompt.READ_THE_WORD, app.prompt.PUT_DOWN_THE_IPAD], 0, null, null);
+                pv_READ_THE_WORD = new prompt();
+                //pv_READ_THE_WORD.start([p_READ_THE_WORD, p_PUT_DOWN_THE_IPAD], 0, null, null);
+                pv_READ_THE_WORD.start(p_READ_THE_WORD, null, null);
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
@@ -838,10 +818,11 @@ function reader(user) {
                   accelerometer.stop();
                   doStage[stage].reveal();
 
-                  app.prompt.stop(function () {
-                    app.prompt.start([app.prompt.partners[(app.readerTurn+1)%2], app.prompt.SELECT_STIMULUS], 0, null, null);
+                  pv_READ_THE_WORD.stop(function () {
+                    pv_SELECT_STIMULUS = new prompt();
+                    pv_SELECT_STIMULUS.start(p_SELECT_STIMULUS[app.readerTurn], null, null);
 
-                  }, 2000);
+                  }, 500);
 
                   
                 }
@@ -895,9 +876,10 @@ function reader(user) {
           initStimuli();
         }
         //this.fadeIncorrect(doStage[stage].feedback);
-        app.prompt.stop();
+        pv_SELECT_STIMULUS.stop();
         this.fadeIncorrect(function () {
-          app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
+          pv_CORRECT_SELECTION=new prompt();
+          pv_CORRECT_SELECTION.start(p_CORRECT_SELECTION,
             function () {
               doStage[stage].feedback();
             }, null);
@@ -924,10 +906,11 @@ function reader(user) {
         this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
         this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
         //this.fadeIncorrect(doStage[stage].feedback);
-        app.prompt.stop();
+        pv_SELECT_STIMULUS.stop();
 
         this.fadeIncorrect(function () {
-          app.prompt.start([app.prompt.CORRECT_STIMULUS], 0, 
+          pv_CORRECT_STIMULUS = new prompt();
+          pv_CORRECT_STIMULUS.start(p_CORRECT_STIMULUS, 
             function () {
               doStage[stage].feedback();
             }, null);
@@ -1330,19 +1313,18 @@ function reader(user) {
         if(reader.feedbackQueue.length>1)
         {
           reader.feedbackQueue.shift();
-          app.prompt.start([app.prompt.INCORRECT_SELECTION], 0, 
+
+          pv_INCORRECT_SELECTION = new prompt();
+          pv_INCORRECT_SELECTION.start(p_INCORRECT_SELECTION,
             function () {
-              setTimeout(function () {
-        //$("#reveal").animate({"opacity": 0}, "slow");
-              var r = app.cardReader[app.readerTurn];
-              doStage[stage].feedback();
-            }, 1000);
+              setTimeout( function () {doStage[stage].feedback();}, 1000)
+                
           }, null);
+
         }else{
           setTimeout(function () {
             $("#reveal").animate({"opacity": 0}, "slow", function () {
               app.nextReader();
-              //$("#reveal").animate({"opacity": 1}, "slow");
             });
           }, 500);
         }
@@ -1364,6 +1346,7 @@ function reader(user) {
     //this.nextStimulus();
 
   }
+
 /* POC remove teacherReview
   function teacherReview(cardListener, cardReader) {
     this.cardListener = cardListener;
