@@ -102,12 +102,13 @@ p_CORRECT_SELECTION = "CORRECT_SELECTION"; //  Great! The right answer was [ANSW
 p_PICK_UP_IPAD = [p_RED_PICK_UP_IPAD, p_BLUE_PICK_UP_IPAD];
 p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
-      function prompt() {
+      function prompt(id, onSuccess, onError, onStatus) {
 
-        this.media = null;
+            var src = "snd/prompt/_id_.mp3".replace("_id_", id);
+            this.media = new Media(src, onSuccess, onError, onStatus);
         // queue: an array of strings to queue audio
         // queue_delay: delay in ms before next element is triggered
-         this.start = function(id, onSuccess, onError){
+         this.start = function(){
 
           if (is_chrome) {
             if(onSuccess){onSuccess();}
@@ -115,8 +116,6 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
           } else {
         // OnSuccess is executed after each successful play, record or stop
 
-            var src = "snd/prompt/_id_.mp3".replace("_id_", id);
-            this.media = new Media(src, onSuccess, onError);
             this.media.play();
           }
         };
@@ -683,8 +682,8 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
         });
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
-        pv_ON_INTRO = new prompt();
-        pv_ON_INTRO.start(p_ON_INTRO, function () {app.nextReader();}, null);
+        pv_ON_INTRO = new prompt(p_ON_INTRO, function () {app.nextReader();}, null);
+        pv_ON_INTRO.start();
         
         // app.nextReader();
 
@@ -710,8 +709,8 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
         app.cardReader[app.readerTurn].nextStimulus();
-        pv_PICK_UP_IPAD = new prompt();
-        pv_PICK_UP_IPAD.start(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
+        pv_PICK_UP_IPAD = new prompt(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
+        pv_PICK_UP_IPAD.start();
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
@@ -807,9 +806,9 @@ function reader(user) {
                     }, null);
 
 */
-                pv_READ_THE_WORD = new prompt();
+                pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
                 //pv_READ_THE_WORD.start([p_READ_THE_WORD, p_PUT_DOWN_THE_IPAD], 0, null, null);
-                pv_READ_THE_WORD.start(p_READ_THE_WORD, null, null);
+                pv_READ_THE_WORD.start();
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
@@ -819,8 +818,8 @@ function reader(user) {
                   doStage[stage].reveal();
 
                   pv_READ_THE_WORD.stop(function () {
-                    pv_SELECT_STIMULUS = new prompt();
-                    pv_SELECT_STIMULUS.start(p_SELECT_STIMULUS[app.readerTurn], null, null);
+                    pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
+                    pv_SELECT_STIMULUS.start();
 
                   }, 500);
 
@@ -878,11 +877,11 @@ function reader(user) {
         //this.fadeIncorrect(doStage[stage].feedback);
         pv_SELECT_STIMULUS.stop();
         this.fadeIncorrect(function () {
-          pv_CORRECT_SELECTION=new prompt();
-          pv_CORRECT_SELECTION.start(p_CORRECT_SELECTION,
+          pv_CORRECT_SELECTION=new prompt(p_CORRECT_SELECTION,
             function () {
               doStage[stage].feedback();
-            }, null);
+            });
+          pv_CORRECT_SELECTION.start();
         });
       };
 
@@ -909,12 +908,13 @@ function reader(user) {
         pv_SELECT_STIMULUS.stop();
 
         this.fadeIncorrect(function () {
-          pv_CORRECT_STIMULUS = new prompt();
-          pv_CORRECT_STIMULUS.start(p_CORRECT_STIMULUS, 
+          pv_CORRECT_STIMULUS = new prompt(p_CORRECT_STIMULUS, 
             function () {
               doStage[stage].feedback();
-            }, null);
+            });
+          pv_CORRECT_STIMULUS.start();
         });
+
 
       };
       this.finishFeedback = function () {
@@ -1314,12 +1314,12 @@ function reader(user) {
         {
           reader.feedbackQueue.shift();
 
-          pv_INCORRECT_SELECTION = new prompt();
-          pv_INCORRECT_SELECTION.start(p_INCORRECT_SELECTION,
+          pv_INCORRECT_SELECTION = new prompt(p_INCORRECT_SELECTION,
             function () {
-              setTimeout( function () {doStage[stage].feedback();}, 1000)
+              setTimeout( function () {doStage[stage].feedback();}, 500)
                 
-          }, null);
+          }, function (error){alert("error:"+error)}, function (status){alert("status:"+status)});
+          pv_INCORRECT_SELECTION.start();
 
         }else{
           setTimeout(function () {
