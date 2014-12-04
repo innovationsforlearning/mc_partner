@@ -180,12 +180,12 @@ body {
     background:#CCC;
 }
 #game_board {
-    background:#888;
+    background:#CCC;
     position:absolute;
-    top: 1%;
-    left: 1%;
-    height:99%;
-    width:99%;
+    top: 0%;
+    left: 0%;
+    height:100%;
+    width:100%;
 }
 #game_header {
     display: none;

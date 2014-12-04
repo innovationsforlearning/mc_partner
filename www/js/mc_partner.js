@@ -86,6 +86,20 @@
     }
   }
 
+// colors
+var    COLORS= {
+      RED: "#ff6057",
+      GREEN: "#27c93f",
+      YELLOW: "#ffbd2e",
+      BLUE: "#2757FF",
+      RED_PARTNER: "#f88",
+      BLUE_PARTNER: "#88f",
+      NEUTRAL: "#CCC"
+    };
+var PARTNER_COLOR = [COLORS.RED_PARTNER, COLORS.BLUE_PARTNER];
+var BOARD_COLOR = [COLORS.RED,COLORS.GREEN,COLORS.YELLOW,COLORS.BLUE];
+
+
 // audio prompts
 p_ON_VERTICAL_STARTUP = "ON_VERTICAL_STARTUP"; //  Please place the iPad flat in front of you to begin.
 p_ON_STARTUP  = "ON_STARTUP"; //  Welcome to MC Partner. Is this the first time you have played? Tap the green Yes or the red No
@@ -104,8 +118,11 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
       function prompt(id, onSuccess, onError, onStatus) {
 
+          this.media = null;
+
             var src = "snd/prompt/_id_.mp3".replace("_id_", id);
-            this.media = new Media(src, onSuccess, onError, onStatus);
+            if (!is_chrome) 
+              this.media = new Media(src, onSuccess, onError, onStatus);
         // queue: an array of strings to queue audio
         // queue_delay: delay in ms before next element is triggered
          this.start = function(){
@@ -142,12 +159,6 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
       WAIT_FOR_ANSWER: 3
     },
 
-    COLORS: {
-      RED: "#ff6057",
-      GREEN: "#27c93f",
-      YELLOW: "#ffbd2e",
-      BLUE: "#2757FF"
-    },
 
     /* watchID: holds the id of the accelerometer service */
     watchID: null,
@@ -703,6 +714,7 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
       },
 
       nextReader: function () {
+        $("#stimulus").css("background", PARTNER_COLOR[app.readerTurn]);
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
@@ -1108,13 +1120,10 @@ function reader(user) {
             stim = stim.replace("Word"+i, reader.revealStimuli[i]);            
           }
           $("#stimulus").html(stim);
+          $("#stimulus").css("background", COLORS.NEUTRAL);
 
-          var colors=[];
-          for (var color in app.COLORS) {
-            if (app.COLORS.hasOwnProperty(color)) {
-                colors.push(app.COLORS[color]);
-            }
-          }
+          var colors=BOARD_COLOR.slice();
+
           colors= randomize(colors);
           for(var i=0; i<4; i++){
             $("#stim"+i).css({"background": colors[i]});
