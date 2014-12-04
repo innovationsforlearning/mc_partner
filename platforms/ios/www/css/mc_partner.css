@@ -237,7 +237,18 @@ body {
     border-style: outset;
     border-radius: 10px;
 }
+#face {
+    position: absolute;
+    top:38%;
+    left:38%;
+    width: 25%;
+    height:32%;
+    z-index: 1;
+    background: -webkit-image-set(url(../img/smiley.png) 1x,
+                                         url(../img/smiley_2x.png) 2x);
+   
 
+}
 #stimulus {
     /*border: 2px solid black;*/
     color: #000000;

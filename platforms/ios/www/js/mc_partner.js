@@ -714,6 +714,9 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
       },
 
       nextReader: function () {
+        $("#face").css("visibility","visible");
+
+
         $("#stimulus").css("background", PARTNER_COLOR[app.readerTurn]);
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
@@ -1090,6 +1093,7 @@ function reader(user) {
         }
 
         function displayStage3() {
+
           $("#stimulus").html(stimHTMLStage3);
           $("#stimulus #word").text(stimuli[0].word);
           $("#stimulus #word").css({opacity:0});
@@ -1107,6 +1111,7 @@ function reader(user) {
         }
 
         function revealStage3() {
+          $("#face").css("visibility","hidden");
 
           var reader =app.cardReader[app.readerTurn];
           reader.revealStimuli=[];
