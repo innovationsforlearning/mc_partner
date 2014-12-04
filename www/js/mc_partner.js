@@ -116,38 +116,61 @@ p_CORRECT_SELECTION = "CORRECT_SELECTION"; //  Great! The right answer was [ANSW
 p_PICK_UP_IPAD = [p_RED_PICK_UP_IPAD, p_BLUE_PICK_UP_IPAD];
 p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
-      function prompt(id, onSuccess, onError, onStatus) {
+function prompt(id, onSuccess, onError, onStatus) {
 
-          this.media = null;
+  this.media = null;
+  this.timeoutID = null;
+  this.intervalID= null;
 
-            var src = "snd/prompt/_id_.mp3".replace("_id_", id);
-            if (!is_chrome) 
-              this.media = new Media(src, onSuccess, onError, onStatus);
-        // queue: an array of strings to queue audio
-        // queue_delay: delay in ms before next element is triggered
-         this.start = function(){
+  var src = "snd/prompt/_id_.mp3".replace("_id_", id);
+  if (!is_chrome) 
+    this.media = new Media(src, onSuccess, onError, onStatus);
 
-          if (is_chrome) {
-            if(onSuccess){onSuccess();}
-            
-          } else {
-        // OnSuccess is executed after each successful play, record or stop
-
-            this.media.play();
+  this.start = function(pre_delay,post_delay){
+    this.pre_delay = pre_delay;
+    this.post_delay = post_delay;
+//alert("prompt:1");
+    if (is_chrome) {
+      if(onSuccess){onSuccess();}
+      
+    } else {
+//alert("prompt:2");
+      if(pre_delay){
+//alert("prompt:3");
+        this.timeoutID = setTimeout(function (){
+          this.media.play();
+          if(this.post_delay){
+            this.intervalID = setInterval(function () { this.media.play();}, this.post_delay);
           }
-        };
-        this.stop = function(callback, delay){
+        }, pre_delay);
+      }else{
 
-          if(this.media){
-            this.media.stop();
-          }
-
-          if(callback){
-            setTimeout(callback, delay);
-          }
-        };
-
+        this.media.play();
+        if(this.post_delay){
+          this.intervalID = setInterval(function () { this.media.play();}, this.post_delay);
+        }
+      }
     }
+  }
+
+  this.stop = function(callback, delay){
+
+    if(this.media){
+      this.media.stop();
+    }
+    if(this.pre_delay){
+        clearTimeout(this.timeoutID);
+        this.pre_delay = null;
+    }
+    if(this.post_delay){
+      clearInterval(this.post_delay);
+      this.post_delay = null;
+    }
+    if(callback){
+      setTimeout(callback, delay);
+    }
+  }
+}
 
     var app = {
 
@@ -808,22 +831,14 @@ function reader(user) {
                 if( Math.abs(acceleration.x) > 9){
                   $("#stimulus #word").css({opacity:1.0});
 
-                  pv_PICK_UP_IPAD.stop();
-                  app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
-/*
-                  app.prompt.start([app.prompt.READ_THE_WORD], 0, 
-                    function() {
-                      setTimeout(function (){
-                        if(app.state.current === app.state.WAIT_FOR_DEVICE_FLAT){
-                          app.prompt.start([app.prompt.PUT_DOWN_THE_IPAD], 0, null, null);
-                        }
-                      }, 5000);
-                    }, null);
 
-*/
-                pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
-                //pv_READ_THE_WORD.start([p_READ_THE_WORD, p_PUT_DOWN_THE_IPAD], 0, null, null);
-                pv_READ_THE_WORD.start();
+                  app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
+                  // let media system complete the stop before beginning the next audio
+                  pv_PICK_UP_IPAD.stop(function () {
+                    pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
+                    pv_READ_THE_WORD.start();                    
+                  }, 50);
+
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
