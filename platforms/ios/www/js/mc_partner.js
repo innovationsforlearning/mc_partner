@@ -1333,7 +1333,7 @@ function reader(user) {
             function () {doStage[stage].feedback();});
 
           // allow audio system to settle before starting the next audio
-          setTimeout(function () { pv_INCORRECT_SELECTION.start(); }, 500);         
+          setTimeout(function () { pv_INCORRECT_SELECTION.start(); }, 1000);         
 
         }else{
           setTimeout(function () {
