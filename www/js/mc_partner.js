@@ -116,11 +116,18 @@ p_CORRECT_SELECTION = "CORRECT_SELECTION"; //  Great! The right answer was [ANSW
 p_PICK_UP_IPAD = [p_RED_PICK_UP_IPAD, p_BLUE_PICK_UP_IPAD];
 p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
+// PROMPT_DELAY: delay before helpful prompts
+PROMPT_DELAY = 0;
+PROMPT_DELAY_INC = 1000;
+MAX_PROMPT_DELAY = 5000;
+
+
 function prompt(id, onSuccess, onError, onStatus) {
 
   this.media = null;
   this.timeoutID = null;
   this.intervalID= null;
+  promptScope = this;
 
   var src = "snd/prompt/_id_.mp3".replace("_id_", id);
   if (!is_chrome) 
@@ -129,25 +136,23 @@ function prompt(id, onSuccess, onError, onStatus) {
   this.start = function(pre_delay,post_delay){
     this.pre_delay = pre_delay;
     this.post_delay = post_delay;
-//alert("prompt:1");
     if (is_chrome) {
       if(onSuccess){onSuccess();}
       
     } else {
-//alert("prompt:2");
       if(pre_delay){
-//alert("prompt:3");
+
         this.timeoutID = setTimeout(function (){
-          this.media.play();
-          if(this.post_delay){
-            this.intervalID = setInterval(function () { this.media.play();}, this.post_delay);
+          promptScope.media.play();
+          if(promptScope.post_delay){
+            promptScope.intervalID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
           }
         }, pre_delay);
       }else{
 
         this.media.play();
         if(this.post_delay){
-          this.intervalID = setInterval(function () { this.media.play();}, this.post_delay);
+          this.intervalID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
         }
       }
     }
@@ -173,6 +178,9 @@ function prompt(id, onSuccess, onError, onStatus) {
 }
 
     var app = {
+
+    // turnCount: wait for each partner to have a turn before incrementing PROMPT_DELAY
+    turnCount: 0,
 
     /* maintain the state of the game */
     state: {
@@ -748,7 +756,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
         app.cardReader[app.readerTurn].nextStimulus();
         pv_PICK_UP_IPAD = new prompt(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
-        pv_PICK_UP_IPAD.start();
+        pv_PICK_UP_IPAD.start(PROMPT_DELAY);
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
@@ -836,7 +844,7 @@ function reader(user) {
                   // let media system complete the stop before beginning the next audio
                   pv_PICK_UP_IPAD.stop(function () {
                     pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
-                    pv_READ_THE_WORD.start();                    
+                    pv_READ_THE_WORD.start(PROMPT_DELAY);                    
                   }, 50);
 
                 }
@@ -849,7 +857,7 @@ function reader(user) {
 
                   pv_READ_THE_WORD.stop(function () {
                     pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
-                    pv_SELECT_STIMULUS.start();
+                    pv_SELECT_STIMULUS.start(PROMPT_DELAY);
 
                   }, 500);
 
@@ -1351,6 +1359,10 @@ function reader(user) {
           setTimeout(function () { pv_INCORRECT_SELECTION.start(); }, 1000);         
 
         }else{
+          // if both partners have had a turn
+          if((++app.turnCount >1) && (PROMPT_DELAY < MAX_PROMPT_DELAY) ){
+            PROMPT_DELAY += PROMPT_DELAY_INC;
+          }
           setTimeout(function () {
             $("#reveal").animate({"opacity": 0}, "slow", function () {
               app.nextReader();
