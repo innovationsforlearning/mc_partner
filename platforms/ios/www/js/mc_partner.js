@@ -92,8 +92,8 @@ var    COLORS= {
       GREEN: "#27c93f",
       YELLOW: "#ffbd2e",
       BLUE: "#2757FF",
-      RED_PARTNER: "#f88",
-      BLUE_PARTNER: "#88f",
+      RED_PARTNER: "#ff6057",
+      BLUE_PARTNER: "#2757FF",
       NEUTRAL: "#CCC"
     };
 var PARTNER_COLOR = [COLORS.RED_PARTNER, COLORS.BLUE_PARTNER];
