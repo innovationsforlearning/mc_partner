@@ -1314,12 +1314,12 @@ function reader(user) {
         {
           reader.feedbackQueue.shift();
 
+          //pv_CORRECT_STIMULUS.stop();
           pv_INCORRECT_SELECTION = new prompt(p_INCORRECT_SELECTION,
-            function () {
-              setTimeout( function () {doStage[stage].feedback();}, 500)
-                
-          }, function (error){alert("error:"+error)}, function (status){alert("status:"+status)});
-          pv_INCORRECT_SELECTION.start();
+            function () {doStage[stage].feedback();});
+
+          // allow audio system to settle before starting the next audio
+          setTimeout(function () { pv_INCORRECT_SELECTION.start(); }, 500);         
 
         }else{
           setTimeout(function () {
