@@ -898,7 +898,7 @@ function reader(user) {
                 }
                 break;
                 case app.state.WAIT_FOR_DEVICE_FLAT:
-                if( Math.abs(acceleration.z) > 4){
+                if( Math.abs(acceleration.z) > 7){
                   app.state.current = app.state.WAIT_FOR_ANSWER;
                   accelerometer.stop();
                   doStage[stage].reveal();
