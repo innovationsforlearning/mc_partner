@@ -159,8 +159,8 @@ function prompt(id, onSuccess, onError, onStatus) {
       onSuccess = function(){
         switch (promptScope.action) {
         case "play":
-          //alert("promptScope.repeatDelay"+promptScope.repeatDelay)
-          promptScope.repeatID = setTimeout(function (){promptScope.media.play();}, promptScope.repeatDelay);
+        // if the prompt repeats, reset the predelay, assuming that a player forgot the flow
+          promptScope.repeatID = setTimeout(function (){PROMPT_DELAY=0;promptScope.media.play();}, promptScope.repeatDelay);
           break;
         case "stop":
           break;
@@ -183,19 +183,9 @@ function prompt(id, onSuccess, onError, onStatus) {
       if(preDelay){
         this.timeoutID = setTimeout(function (){
           promptScope.media.play();
-          /*
-          if(promptScope.repeatDelay){
-            promptScope.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.repeatDelay);
-          }
-          */
         }, preDelay);
       }else{
         this.media.play();
-        /*
-        if(this.repeatDelay){
-          this.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.repeatDelay);
-        }
-        */
       }
     }
   }
