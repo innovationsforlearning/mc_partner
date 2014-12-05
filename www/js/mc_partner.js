@@ -771,7 +771,11 @@ function prompt(id, onSuccess, onError, onStatus) {
         });
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
-        pv_ON_INTRO = new prompt(p_ON_INTRO, function () {app.nextReader();}, null);
+        pv_ON_INTRO = new prompt(p_ON_INTRO, function () {
+          setTimeout( function (){
+              app.nextReader();
+          }, 2000);
+        }, null);
         pv_ON_INTRO.start();
         
         // app.nextReader();
