@@ -116,6 +116,8 @@ p_CORRECT_SELECTION = "CORRECT_SELECTION"; //  Great! The right answer was [ANSW
 p_PICK_UP_IPAD = [p_RED_PICK_UP_IPAD, p_BLUE_PICK_UP_IPAD];
 p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 
+sfx_correct=["correct_01","correct_02","correct_03"];
+
 // PROMPT_DELAY: delay before helpful prompts
 PROMPT_DELAY = 0;
 PROMPT_DELAY_INC = 1000;
@@ -966,8 +968,9 @@ function reader(user) {
         }
         //this.fadeIncorrect(doStage[stage].feedback);
         pv_SELECT_STIMULUS.stop();
+        var snd=sfx_correct[Math.floor(Math.random()*sfx_correct.length)];
         this.fadeIncorrect(function () {
-          pv_CORRECT_SELECTION=new prompt(p_CORRECT_SELECTION,
+          pv_CORRECT_SELECTION=new prompt(snd,
             function () {
               doStage[stage].feedback();
             });
