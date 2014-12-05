@@ -173,7 +173,7 @@ function prompt(id, onSuccess, onError, onStatus) {
     if(is_chrome){
       if(callback)
         callback();
-      return
+      return;
     };
 
     if(this.media){
@@ -184,7 +184,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         this.pre_delay = null;
     }
     if(this.post_delay){
-      clearInterval(this.post_delay);
+      clearInterval(this.repeatID);
       this.post_delay = null;
     }
     if(callback){
@@ -840,6 +840,7 @@ function reader(user) {
       if (is_chrome){
         $("#stimulus #word").css({opacity:1.0});
        $("div.stage").one("click",function (event){
+          pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
           doStage[stage].reveal();
           //app.cardReader[app.readerTurn].reveal();
         });

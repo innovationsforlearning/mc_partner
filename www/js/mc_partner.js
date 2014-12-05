@@ -184,7 +184,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         this.pre_delay = null;
     }
     if(this.post_delay){
-      clearInterval(this.post_delay);
+      clearInterval(this.repeatID);
       this.post_delay = null;
     }
     if(callback){
