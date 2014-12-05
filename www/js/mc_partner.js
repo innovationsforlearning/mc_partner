@@ -127,14 +127,23 @@ function prompt(id, onSuccess, onError, onStatus) {
 
   this.media = null;
   this.timeoutID = null;
-  this.intervalID= null;
+  this.repeatID= null;
   promptScope = this;
 
-  var src = "snd/prompt/_id_.mp3".replace("_id_", id);
-  if (!is_chrome) 
-    this.media = new Media(src, onSuccess, onError, onStatus);
+
 
   this.start = function(pre_delay,post_delay){
+
+    if(is_chrome){
+      if(onSuccess)
+        onSuccess();
+      return
+    };
+
+    var src = "snd/prompt/_id_.mp3".replace("_id_", id);
+
+    this.media = new Media(src, onSuccess, onError, onStatus);
+
     this.pre_delay = pre_delay;
     this.post_delay = post_delay;
     if (is_chrome) {
@@ -146,20 +155,26 @@ function prompt(id, onSuccess, onError, onStatus) {
         this.timeoutID = setTimeout(function (){
           promptScope.media.play();
           if(promptScope.post_delay){
-            promptScope.intervalID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
+            promptScope.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
           }
         }, pre_delay);
       }else{
 
         this.media.play();
         if(this.post_delay){
-          this.intervalID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
+          this.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
         }
       }
     }
   }
 
   this.stop = function(callback, delay){
+
+    if(is_chrome){
+      if(callback)
+        callback();
+      return;
+    };
 
     if(this.media){
       this.media.stop();
@@ -825,6 +840,7 @@ function reader(user) {
       if (is_chrome){
         $("#stimulus #word").css({opacity:1.0});
        $("div.stage").one("click",function (event){
+          pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
           doStage[stage].reveal();
           //app.cardReader[app.readerTurn].reveal();
         });
