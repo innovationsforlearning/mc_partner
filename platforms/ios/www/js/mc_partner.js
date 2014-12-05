@@ -1308,16 +1308,18 @@ function reader(user) {
       $(onsetSelector).text(or.onset);
       $(selector+ " #rime").text(or.rime);
 
+       var rimeSelector = selector+ " #rime"; 
+     $(rimeSelector).animate({
+          "right": "1%"
+        }, "fast");
+
+
       // animate and sound out
       doSound(or.onset, "onset");
       $(selector).css("color","#000000");
       $(onsetSelector).css("color","#FFFF00");
 
       $(onsetSelector).animate({
-        /*
-        "font-size": "200px",
-            "bottom": "-10px"
-        */
           "left": "1%"
         }, "fast", function () {
 
@@ -1348,22 +1350,26 @@ function reader(user) {
         doSound(or.rime, "rime");
         $(onsetSelector).css("color","black");
         $(rimeSelector).css("color","#FFFF00");
-
+/*
 
         $(rimeSelector).animate({
-/*
-          "font-size": "200px",
-            "bottom": "-10px"
-*/
           "right": "1%"
         }, "fast", function () {
 
              setTimeout(
-
              function () {
                  app.cardReader[app.readerTurn].feedbackStage3word();
              }, 1000);
          });
+*/
+
+        setTimeout(
+             function () {
+                 app.cardReader[app.readerTurn].feedbackStage3word();
+             }, 1000);
+
+
+
       };
 
       this.feedbackStage3word = function () {
