@@ -122,17 +122,23 @@ PROMPT_DELAY_INC = 1000;
 MAX_PROMPT_DELAY = 5000;
 PROMPT_REPEAT_DELAY = 10000;
 
-
 function prompt(id, onSuccess, onError, onStatus) {
 
   this.media = null;
   this.timeoutID = null;
   this.repeatID= null;
+  this.preDelay=null;
+  this.repeatDelay=null;
+
+
+  // Media supports only one onSuccess callback which is called for Play, Record and Stop. 
+  // So add and action so onSuccess knows what was successful
+  this.action=null;
   promptScope = this;
 
 
 
-  this.start = function(pre_delay,post_delay){
+  this.start = function(preDelay,repeatDelay){
 
     if(is_chrome){
       if(onSuccess)
@@ -140,30 +146,54 @@ function prompt(id, onSuccess, onError, onStatus) {
       return
     };
 
+    this.preDelay = preDelay;
+    this.repeatDelay = repeatDelay
     var src = "snd/prompt/_id_.mp3".replace("_id_", id);
 
-    this.media = new Media(src, onSuccess, onError, onStatus);
+    // using a timeout with onSuccess to repeat rather than an interval
+    // to make the time between the end and the start of a prompt consistant
+    // regardless of the length of the audio. media.duration always returning -1 on ios.
+    if(repeatDelay){
+      onSuccess = function(){
+        switch (promptScope.action) {
+        case "play":
+          //alert("promptScope.repeatDelay"+promptScope.repeatDelay)
+          promptScope.repeatID = setTimeout(function (){promptScope.media.play();}, promptScope.repeatDelay);
+          break;
+        case "stop":
+          break;
+        default:
+          alert("default");
+        }
+      }
+    }
 
-    this.pre_delay = pre_delay;
-    this.post_delay = post_delay;
+    this.media = new Media(src, onSuccess, onError, onStatus);
+    this.action = "play";
+
+
+    this.preDelay = preDelay;
+    this.repeatDelay = repeatDelay;
     if (is_chrome) {
       if(onSuccess){onSuccess();}
       
     } else {
-      if(pre_delay){
-
+      if(preDelay){
         this.timeoutID = setTimeout(function (){
           promptScope.media.play();
-          if(promptScope.post_delay){
-            promptScope.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
+          /*
+          if(promptScope.repeatDelay){
+            promptScope.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.repeatDelay);
           }
-        }, pre_delay);
+          */
+        }, preDelay);
       }else{
-
         this.media.play();
-        if(this.post_delay){
-          this.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.post_delay);
+        /*
+        if(this.repeatDelay){
+          this.repeatID = setInterval(function () { promptScope.media.play();}, promptScope.repeatDelay);
         }
+        */
       }
     }
   }
@@ -176,16 +206,17 @@ function prompt(id, onSuccess, onError, onStatus) {
       return;
     };
 
+    this.action="stop";
     if(this.media){
       this.media.stop();
     }
-    if(this.pre_delay){
+    if(this.preDelay){
         clearTimeout(this.timeoutID);
-        this.pre_delay = null;
+        this.preDelay = null;
     }
-    if(this.post_delay){
+    if(this.repeatDelay){
       clearInterval(this.repeatID);
-      this.post_delay = null;
+      this.repeatDelay = null;
     }
     if(callback){
       setTimeout(callback, delay);
