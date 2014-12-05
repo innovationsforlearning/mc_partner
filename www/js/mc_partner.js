@@ -120,6 +120,7 @@ p_SELECT_STIMULUS = [p_RED_SELECT_STIMULUS, p_BLUE_SELECT_STIMULUS];
 PROMPT_DELAY = 0;
 PROMPT_DELAY_INC = 1000;
 MAX_PROMPT_DELAY = 5000;
+PROMPT_REPEAT_DELAY = 10000;
 
 
 function prompt(id, onSuccess, onError, onStatus) {
@@ -756,7 +757,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
         app.cardReader[app.readerTurn].nextStimulus();
         pv_PICK_UP_IPAD = new prompt(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
-        pv_PICK_UP_IPAD.start(PROMPT_DELAY);
+        pv_PICK_UP_IPAD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
@@ -844,7 +845,7 @@ function reader(user) {
                   // let media system complete the stop before beginning the next audio
                   pv_PICK_UP_IPAD.stop(function () {
                     pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
-                    pv_READ_THE_WORD.start(PROMPT_DELAY);                    
+                    pv_READ_THE_WORD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);                    
                   }, 50);
 
                 }
@@ -857,7 +858,7 @@ function reader(user) {
 
                   pv_READ_THE_WORD.stop(function () {
                     pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
-                    pv_SELECT_STIMULUS.start(PROMPT_DELAY);
+                    pv_SELECT_STIMULUS.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
 
                   }, 500);
 
