@@ -18,7 +18,7 @@
  */
  // if in development skip cordova initialization/deviceready event handling
 var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-if(is_chrome){
+if(false){
   //window.location.assign("partnerstation.html")
   var cordova_app = {
      // Application Constructor
@@ -58,7 +58,14 @@ var cordova_app = {
        
         console.log('Received Event: ' + id);
 
-        
+        navigator.notification.alert(
+            'You are the winner!',  // message
+            function () {},         // callback
+            'Game Over',            // title
+            'Done'                  // buttonName
+        );
+
+
         switch(id) {
             case 'resume':
                 location.reload();

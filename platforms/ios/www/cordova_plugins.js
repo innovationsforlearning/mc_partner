@@ -29,6 +29,20 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.device/www/device.js",
+        "id": "org.apache.cordova.device.device",
+        "clobbers": [
+            "device"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.dialogs/www/notification.js",
+        "id": "org.apache.cordova.dialogs.notification",
+        "merges": [
+            "navigator.notification"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [
@@ -178,9 +192,11 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "org.apache.cordova.media": "0.2.14",
-    "org.apache.cordova.device-motion": "0.2.10",
-    "org.apache.cordova.file": "1.3.1"
+    "org.apache.cordova.media": "0.2.15",
+    "org.apache.cordova.device-motion": "0.2.11",
+    "org.apache.cordova.device": "0.2.13",
+    "org.apache.cordova.dialogs": "0.2.11",
+    "org.apache.cordova.file": "1.3.2"
 }
 // BOTTOM OF METADATA
 });

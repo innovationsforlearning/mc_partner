@@ -1,0 +1,12 @@
+XCode Settings
+
+  Enterprise build
+    Build Settings
+      Code Signing Identity
+        Automatic
+      Provisioning Profile
+        iOSTeam Provisioning Profile: com.ifl.mcpartner
+
+    General
+      Identity
+        com.ifl.mcpartner

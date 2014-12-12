@@ -20,7 +20,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
            id="org.apache.cordova.device-motion"
-      version="0.2.10">
+      version="0.2.11">
 	
     <name>Device Motion</name>
     <description>Cordova Device Motion Plugin</description>
@@ -137,7 +137,14 @@
 
     <!-- windows8 -->
     <platform name="windows8">
-        <js-module src="src/windows8/AccelerometerProxy.js" name="AccelerometerProxy">
+        <js-module src="src/windows/AccelerometerProxy.js" name="AccelerometerProxy">
+            <merges target="" />
+        </js-module>
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+        <js-module src="src/windows/AccelerometerProxy.js" name="AccelerometerProxy">
             <merges target="" />
         </js-module>
     </platform>

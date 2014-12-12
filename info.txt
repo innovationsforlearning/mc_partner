@@ -1,0 +1,33 @@
+Node version: v0.10.30
+
+Cordova version: 4.0.0
+
+Config.xml file: 
+
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.ifl.mcpartner" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>MC-Partner</name>
+    <description>
+        A sample Apache Cordova application that teaches literacy.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="EnableViewportScale" value="true" />
+    <preference name="Orientation" value="landscape" />
+</widget>
+
+
+Plugins: 
+
+org.apache.cordova.device,org.apache.cordova.device-motion,org.apache.cordova.dialogs,org.apache.cordova.file,org.apache.cordova.media
+
+Error retrieving Android platform information: Error: android: Command failed with exit code ENOENT
+
+iOS platform:
+
+Xcode 6.1
+Build version 6A1052d
+

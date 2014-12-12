@@ -7,7 +7,6 @@
  var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 
 
-
  var watchID=0;
  var login_html = "";
  var game_html = "";
@@ -43,6 +42,11 @@
   var stimStage2 = "bat,cat,dad,fat,get,hat,jet,kid,let,met,net,pet,rat,sat,tap,vat,wet,yet,zap,at,egg,in,on,up";
   var stimStage3Sight = "a,and,ball,be,blue,by,do,for,funny,green,has,he," + "house,is,like,little,me,no,play,said,school,see,she,the,they,to," + "toy,we,why";
   var stimStage3OR = "cat,hat,bat,cap,lap,nap,map,mad,sad,bad,ham,jam," + "yam,man,tan,ran,hid,lid,did,kid,him,rim,fin,tin,win,dip,lip,sip," + "sit,fit,kit,rod,nod,top,hop,pop,mom,son,ton,won,got,hot,lot,mud," + "run,bun,sun,pup,but,cut,hut,nut,bed,fed,led,hem,hen,ten,men,pep," + "get,let,pet,yet,jet";
+
+
+  function debug(s){
+    $("#debug").text(s);
+  }
 
   function psAlert(message, callback){
 
@@ -139,7 +143,6 @@ function prompt(id, onSuccess, onError, onStatus) {
   promptScope = this;
 
 
-
   this.start = function(preDelay,repeatDelay){
 
     if(is_chrome){
@@ -169,6 +172,14 @@ function prompt(id, onSuccess, onError, onStatus) {
         }
       }
     }
+
+/*
+    if (device.platform == 'Android') {
+        src = '/android_asset/www/' + src;
+        debug(src);
+    }
+    debug("device:"+device.platform);
+*/
 
     this.media = new Media(src, onSuccess, onError, onStatus);
     this.action = "play";
@@ -269,6 +280,10 @@ function prompt(id, onSuccess, onError, onStatus) {
     /////////////////////////////////////////////
 
     initialize: function () {
+
+
+        // navigator.notification.alert("device:"+device.platform, function (){});
+
         
         this.initLogin(false);
         this.initTeacherLogin();
@@ -1097,6 +1112,10 @@ function reader(user) {
         var src;
         src = audio_template.replace("_id_", stimulus);
         src = src.replace("_type_", type);
+        if (device.platform == 'Android') {
+          src = '/android_asset/www/' + src;
+        }
+
             var media = new Media(src, onSuccess, onError);
             media.play();
 

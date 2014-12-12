@@ -24,6 +24,12 @@
                             "xml": "false",
                             "count": 1
                         }
+                    ],
+                    "AudioToolbox.framework": [
+                        {
+                            "xml": "true",
+                            "count": 1
+                        }
                     ]
                 }
             },
@@ -41,6 +47,14 @@
                         {
                             "xml": "<feature name=\"Accelerometer\"><param name=\"ios-package\" value=\"CDVAccelerometer\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -49,15 +63,21 @@
     },
     "installed_plugins": {
         "org.apache.cordova.media": {
-            "PACKAGE_NAME": "org.innovationsforlearning.mcpartner"
+            "PACKAGE_NAME": "com.ifl.mcpartner"
         },
         "org.apache.cordova.device-motion": {
-            "PACKAGE_NAME": "org.innovationsforlearning.mcpartner"
+            "PACKAGE_NAME": "com.ifl.mcpartner"
+        },
+        "org.apache.cordova.device": {
+            "PACKAGE_NAME": "com.ifl.mcpartner"
+        },
+        "org.apache.cordova.dialogs": {
+            "PACKAGE_NAME": "com.ifl.mcpartner"
         }
     },
     "dependent_plugins": {
         "org.apache.cordova.file": {
-            "PACKAGE_NAME": "org.innovationsforlearning.mcpartner"
+            "PACKAGE_NAME": "com.ifl.mcpartner"
         }
     }
 }

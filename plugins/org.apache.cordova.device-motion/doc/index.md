@@ -24,6 +24,15 @@ a motion sensor that detects the change (_delta_) in movement relative to the
 current device orientation, in three dimensions along the _x_, _y_, and _z_
 axis.
 
+Access is via a global `navigator.accelerometer` object.
+
+Although the object is attached to the global scoped `navigator`, it is not available until after the `deviceready` event.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(navigator.accelerometer);
+    }
+
 ## Installation
 
     cordova plugin add org.apache.cordova.device-motion
@@ -37,8 +46,8 @@ axis.
 - Firefox OS
 - iOS
 - Tizen
-- Windows Phone 7 and 8
-- Windows 8
+- Windows Phone 8
+- Windows
 
 ## Methods
 
