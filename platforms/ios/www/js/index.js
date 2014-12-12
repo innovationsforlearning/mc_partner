@@ -59,9 +59,9 @@ var cordova_app = {
         console.log('Received Event: ' + id);
 
         navigator.notification.alert(
-            'You are the winner!',  // message
+            'index.js',  // message
             function () {},         // callback
-            'Game Over',            // title
+            'id:'+id,            // title
             'Done'                  // buttonName
         );
 

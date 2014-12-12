@@ -58,14 +58,6 @@ var cordova_app = {
        
         console.log('Received Event: ' + id);
 
-        navigator.notification.alert(
-            'You are the winner!',  // message
-            function () {},         // callback
-            'Game Over',            // title
-            'Done'                  // buttonName
-        );
-
-
         switch(id) {
             case 'resume':
                 location.reload();

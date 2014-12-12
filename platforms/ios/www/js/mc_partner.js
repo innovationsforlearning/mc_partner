@@ -283,6 +283,13 @@ function prompt(id, onSuccess, onError, onStatus) {
 
 
         // navigator.notification.alert("device:"+device.platform, function (){});
+        navigator.notification.alert(
+            'app.initialize',  // message
+            function () {},         // callback
+            'app',            // title
+            'Done'                  // buttonName
+        );
+
 
         
         this.initLogin(false);

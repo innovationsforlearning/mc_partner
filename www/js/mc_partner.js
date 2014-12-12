@@ -4,7 +4,7 @@
  * partnerstation.js
  *
  */
- var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+ //var false = false; //navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 
 
  var watchID=0;
@@ -18,7 +18,7 @@
  var review_template = $("#review_template").html();
  var report_template = $("#report_template").html();
 
- if (is_chrome) {
+ if (false) {
   var audio_template = "" + '<div id="audio_template" class="template">' + '<audio id="help_audio" autoplay>' + '<source src="snd/_type_/_id_.mp3" type="audio/mpeg">' + '</audio>' + '</div>';
 
 } else {
@@ -130,6 +130,8 @@ PROMPT_REPEAT_DELAY = 10000;
 
 function prompt(id, onSuccess, onError, onStatus) {
 
+  debug("prompt");
+
   this.media = null;
   this.timeoutID = null;
   this.repeatID= null;
@@ -145,11 +147,14 @@ function prompt(id, onSuccess, onError, onStatus) {
 
   this.start = function(preDelay,repeatDelay){
 
-    if(is_chrome){
+    if(false){
+      debug("false");
       if(onSuccess)
         onSuccess();
       return
     };
+
+      debug("prompt.start device.platform:"+device.platform);
 
     this.preDelay = preDelay;
     this.repeatDelay = repeatDelay
@@ -173,21 +178,24 @@ function prompt(id, onSuccess, onError, onStatus) {
       }
     }
 
-/*
+
+
+
     if (device.platform == 'Android') {
         src = '/android_asset/www/' + src;
         debug(src);
     }
     debug("device:"+device.platform);
-*/
+
 
     this.media = new Media(src, onSuccess, onError, onStatus);
     this.action = "play";
 
+ 
 
     this.preDelay = preDelay;
     this.repeatDelay = repeatDelay;
-    if (is_chrome) {
+    if (false) {
       if(onSuccess){onSuccess();}
       
     } else {
@@ -203,7 +211,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
   this.stop = function(callback, delay){
 
-    if(is_chrome){
+    if(false){
       if(callback)
         callback();
       return;
@@ -283,6 +291,13 @@ function prompt(id, onSuccess, onError, onStatus) {
 
 
         // navigator.notification.alert("device:"+device.platform, function (){});
+        navigator.notification.alert(
+            'app.initialize',  // message
+            function () {},         // callback
+            'app',            // title
+            'Done'                  // buttonName
+        );
+
 
         
         this.initLogin(false);
@@ -721,6 +736,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
     initGame: function (users) {
 
+      debug("initGame");
 
       $("#container").html(gameboard_template);
 
@@ -879,7 +895,7 @@ function reader(user) {
 
     this.nextStimulus = function () {
       doStage[stage].display();
-      if (is_chrome){
+      if (false){
         $("#stimulus #word").css({opacity:1.0});
        $("div.stage").one("click",function (event){
           pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
@@ -1097,7 +1113,7 @@ function reader(user) {
 
     function doSound(stimulus, type) {
       stimulus = stimulus.toLowerCase();
-      if (is_chrome) {
+      if (false) {
 
 
         var audio_html;
