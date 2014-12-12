@@ -124,13 +124,11 @@ sfx_correct=["correct_01","correct_02","correct_03"];
 
 // PROMPT_DELAY: delay before helpful prompts
 PROMPT_DELAY = 0;
-PROMPT_DELAY_INC = 1000;
+PROMPT_DELAY_INC = 2499;
 MAX_PROMPT_DELAY = 5000;
 PROMPT_REPEAT_DELAY = 10000;
 
 function prompt(id, onSuccess, onError, onStatus) {
-
-  debug("prompt");
 
   this.media = null;
   this.timeoutID = null;
@@ -148,13 +146,10 @@ function prompt(id, onSuccess, onError, onStatus) {
   this.start = function(preDelay,repeatDelay){
 
     if(false){
-      debug("false");
       if(onSuccess)
         onSuccess();
       return
     };
-
-      debug("prompt.start device.platform:"+device.platform);
 
     this.preDelay = preDelay;
     this.repeatDelay = repeatDelay
@@ -171,6 +166,7 @@ function prompt(id, onSuccess, onError, onStatus) {
           promptScope.repeatID = setTimeout(function (){PROMPT_DELAY=0;promptScope.media.play();}, promptScope.repeatDelay);
           break;
         case "stop":
+          promptScope.media.release();
           break;
         default:
           alert("default");
@@ -183,10 +179,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
     if (device.platform == 'Android') {
         src = '/android_asset/www/' + src;
-        debug(src);
     }
-    debug("device:"+device.platform);
-
 
     this.media = new Media(src, onSuccess, onError, onStatus);
     this.action = "play";
@@ -220,6 +213,7 @@ function prompt(id, onSuccess, onError, onStatus) {
     this.action="stop";
     if(this.media){
       this.media.stop();
+      this.media.release();
     }
     if(this.preDelay){
         clearTimeout(this.timeoutID);
@@ -288,16 +282,6 @@ function prompt(id, onSuccess, onError, onStatus) {
     /////////////////////////////////////////////
 
     initialize: function () {
-
-
-        // navigator.notification.alert("device:"+device.platform, function (){});
-        navigator.notification.alert(
-            'app.initialize',  // message
-            function () {},         // callback
-            'app',            // title
-            'Done'                  // buttonName
-        );
-
 
         
         this.initLogin(false);
@@ -736,8 +720,6 @@ function prompt(id, onSuccess, onError, onStatus) {
 
     initGame: function (users) {
 
-      debug("initGame");
-
       $("#container").html(gameboard_template);
 
       this.cardListener.user = this.student_data[users.listener];
@@ -1099,6 +1081,7 @@ function reader(user) {
 
       function onSuccess() {
         console.log("playAudio():Audio Success");
+
       }
 
     // onError Callback 
@@ -1132,7 +1115,7 @@ function reader(user) {
           src = '/android_asset/www/' + src;
         }
 
-            var media = new Media(src, onSuccess, onError);
+            var media = new Media(src, function() { media.release();}, onError);
             media.play();
 
           }
