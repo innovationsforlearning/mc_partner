@@ -111,16 +111,21 @@ INSTRUCTION_QUEUE=['WELCOME', 'INSTRUCTION_0', 'INSTRUCTION_1', 'INSTRUCTION_2',
 var index;
 
 if(isDesktop){
-  var Media = function(src, success, error, status) {
+  function Media (src, success, error, status) {
 
-    function play() {
-      alert("play:"+src);
+
+    this.play = function () {
+      alert("Media.play:"+src);
       success();
     };
-    function stop(){
-      alert("stop:"+src);
+    this.release = function () {
+
+    };
+    this.stop = function (){
+      alert("Media.stop:"+src);
     };
   }
+
 }
 
 var instructions = {
@@ -132,48 +137,51 @@ var instructions = {
   action: null,
 
   start: function (callback){
-    finalCallback = callback;
-    index = 0;
-    startNext();
+    this.finalCallback = callback;
+    this.index = 0;
+    this.startNext();
   },
 
   startNext: function (){
-    if(index >= queue.length){
-      media.release();
-      finalCallback();
+    if(this.index >= this.queue.length){
+      this.media.release();
+      this.finalCallback();
       alert("end of queue");
       return;
     }
 
-    var src = "snd/prompt/_id_.mp3".replace("_id_", queue[index++]);
-    if (device.platform == 'Android') {
-        src = '/android_asset/www/' + src;
+    var src = "snd/prompt/_id_.mp3".replace("_id_", this.queue[this.index++]);
+    if(!isDesktop){
+      if (device.platform == 'Android') {
+          src = '/android_asset/www/' + src;
+      }
     }
 
-    media = new Media(src, 
+    this.media = new Media(src, 
       function() {
-        media.release();
-        if(action=='play'){
-          timeoutID=setTimeout( function() {
-            startNext();
+        var i = instructions;
+        i.media.release();
+        if(i.action=='play'){
+          i.timeoutID=setTimeout( function() {
+            i.startNext();
             }, INSTRUCTION_DELAY);
         }
 
       }, 
       function() {
-        media.release();
-        finalCallback();
+        this.media.release();
+        this.finalCallback();
       }
     );
-    action='play';
-    media.play();
+    this.action='play';
+    this.media.play();
   },
 
   stop: function (){
-    clearTimeout(timeoutID);
-    action="stop";
-    media.stop();
-    media.release();
+    clearTimeout(this.timeoutID);
+    this.action="stop";
+    this.media.stop();
+    this.media.release();
   }
 }
 
