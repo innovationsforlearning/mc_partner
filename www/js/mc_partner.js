@@ -110,6 +110,19 @@ INSTRUCTION_QUEUE=['WELCOME', 'INSTRUCTION_0', 'INSTRUCTION_1', 'INSTRUCTION_2',
 
 var index;
 
+if(is_desktop){
+  var Media = function(src, success, error, status) {
+
+    function play() {
+      alert("play:"+src);
+      success();
+    };
+    function stop(){
+      alert("stop:"+src);
+    };
+  }
+}
+
 var instructions = {
 
   queue: ['WELCOME', 'INSTRUCTION_0', 'INSTRUCTION_1', 'INSTRUCTION_2', 'INSTRUCTION_3', 'INSTRUCTION_4', 'INSTRUCTION_5'],
@@ -127,6 +140,7 @@ var instructions = {
     if(index >= queue.length){
       media.release();
       finalCallback();
+      alert("end of queue");
       return;
     }
 
