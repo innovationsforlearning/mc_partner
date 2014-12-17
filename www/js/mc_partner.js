@@ -4,7 +4,7 @@
  * partnerstation.js
  *
  */
- var is_desktop = navigator.platform == 'MacIntel';
+ var isDesktop = navigator.platform == 'MacIntel';
 
 
  var watchID=0;
@@ -18,7 +18,7 @@
  var review_template = $("#review_template").html();
  var report_template = $("#report_template").html();
 
- if (is_desktop) {
+ if (isDesktop) {
   var audio_template = "" + '<div id="audio_template" class="template">' + '<audio id="help_audio" autoplay>' + '<source src="snd/_type_/_id_.mp3" type="audio/mpeg">' + '</audio>' + '</div>';
 
 } else {
@@ -110,7 +110,7 @@ INSTRUCTION_QUEUE=['WELCOME', 'INSTRUCTION_0', 'INSTRUCTION_1', 'INSTRUCTION_2',
 
 var index;
 
-if(is_desktop){
+if(isDesktop){
   var Media = function(src, success, error, status) {
 
     function play() {
@@ -129,6 +129,7 @@ var instructions = {
   media: null,
   finalCallback: null,
   timeoutID: null,
+  action: null,
 
   start: function (callback){
     finalCallback = callback;
@@ -152,20 +153,25 @@ var instructions = {
     media = new Media(src, 
       function() {
         media.release();
-        timeoutID=setTimeout( function() {
-                  startNext();
-                }, INSTRUCTION_DELAY);
+        if(action=='play'){
+          timeoutID=setTimeout( function() {
+            startNext();
+            }, INSTRUCTION_DELAY);
+        }
+
       }, 
       function() {
         media.release();
         finalCallback();
       }
     );
+    action='play';
     media.play();
   },
 
   stop: function (){
     clearTimeout(timeoutID);
+    action="stop";
     media.stop();
     media.release();
   }
@@ -188,7 +194,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
   this.start = function(preDelay,repeatDelay){
 
-    if(false){
+    if(isDesktop){
       if(onSuccess)
         onSuccess();
       return
@@ -231,7 +237,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
     this.preDelay = preDelay;
     this.repeatDelay = repeatDelay;
-    if (false) {
+    if (isDesktop) {
       if(onSuccess){onSuccess();}
       
     } else {
@@ -247,7 +253,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
   this.stop = function(callback, delay){
 
-    if(false){
+    if(isDesktop){
       if(callback)
         callback();
       return;
@@ -828,15 +834,7 @@ function prompt(id, onSuccess, onError, onStatus) {
           }, 2000);
         }, null);
   */
-        pv_ON_INTRO = new prompt(p_ON_INTRO, function () {
-          setTimeout( function (){
-              app.nextReader();
-          }, 2000);
-        }, null);
-
-        pv_ON_INTRO.start();
-        
-        // app.nextReader();
+        instructions.start(app.nextReader);
 
       },
 
@@ -930,7 +928,7 @@ function reader(user) {
 
     this.nextStimulus = function () {
       doStage[stage].display();
-      if (false){
+      if (isDesktop){
         $("#stimulus #word").css({opacity:1.0});
        $("div.stage").one("click",function (event){
           pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
@@ -1149,7 +1147,7 @@ function reader(user) {
 
     function doSound(stimulus, type) {
       stimulus = stimulus.toLowerCase();
-      if (false) {
+      if (isDesktop) {
 
 
         var audio_html;
