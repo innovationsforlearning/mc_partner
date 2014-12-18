@@ -842,7 +842,7 @@ function prompt(id, onSuccess, onError, onStatus) {
           }, 2000);
         }, null);
   */
-        instructions.start(app.nextReader);
+        instructions.start(function() {app.nextReader();});
 
       },
 
