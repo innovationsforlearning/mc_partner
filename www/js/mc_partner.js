@@ -115,14 +115,13 @@ if(isDesktop){
 
 
     this.play = function () {
-      alert("Media.play:"+src);
       success();
     };
     this.release = function () {
 
     };
     this.stop = function (){
-      alert("Media.stop:"+src);
+      success();
     };
   }
 
@@ -143,10 +142,9 @@ var instructions = {
   },
 
   startNext: function (){
-    if(this.index >= this.queue.length){
+    if((this.index >= this.queue.length)|| this.action=='stop'){
       this.media.release();
       this.finalCallback();
-      alert("end of queue");
       return;
     }
 
@@ -161,13 +159,10 @@ var instructions = {
       function() {
         var i = instructions;
         i.media.release();
-        if(i.action=='play'){
-          i.timeoutID=setTimeout( function() {
+        i.timeoutID=setTimeout( function() {
             i.startNext();
-            }, INSTRUCTION_DELAY);
-        }
-
-      }, 
+          }, INSTRUCTION_DELAY);
+        },
       function() {
         this.media.release();
         this.finalCallback();
@@ -835,15 +830,14 @@ function prompt(id, onSuccess, onError, onStatus) {
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
 
-  /*
-        pv_ON_INTRO = new prompt(p_ON_INTRO, function () {
-          setTimeout( function (){
-              app.nextReader();
-          }, 2000);
-        }, null);
-  */
+        $("#start.game_button").one("click", function (){ app.doStart();}).show();
+        app.state.current = app.state.WAIT_FOR_START;
         instructions.start(function() {app.nextReader();});
+      },
 
+      doStart: function() {
+        $("#start.game_button").hide();
+        instructions.stop();
       },
 
       incorrect_words: function (target, source){
@@ -854,7 +848,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         for(i=0;i<3;i++){
           var j=Math.floor(Math.random()*words.length);
           incorrect.push(words[j]);
-          words.splice(j,1)
+          words.splice(j,1);
         }
         return incorrect;
       },
@@ -868,10 +862,10 @@ function prompt(id, onSuccess, onError, onStatus) {
         this.readerTurn = (this.readerTurn + 1) % this.cardReader.length;
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
-        app.state.current = app.state.WAIT_FOR_DEVICE_VERTICAL;
+        app.state.current = app.state.WAIT_FOR_START;
         app.cardReader[app.readerTurn].nextStimulus();
-        pv_PICK_UP_IPAD = new prompt(p_PICK_UP_IPAD[(app.readerTurn+1)%2], null, null);
-        pv_PICK_UP_IPAD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
+        pv_PICK_UP_TABLET = new prompt(p_PICK_UP_TABLET, null, null);
+        pv_PICK_UP_TABLET.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
 
         // this.cardReader[this.readerTurn].nextStimulus();
       }
