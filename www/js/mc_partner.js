@@ -18,6 +18,14 @@
  var review_template = $("#review_template").html();
  var report_template = $("#report_template").html();
 
+var gb_css = {
+    "position": "absolute",
+    "top":"20%",
+    "text-align": "center",
+    "width":"100%",
+    "height":"100%"
+}
+
  if (isDesktop) {
   var audio_template = "" + '<div id="audio_template" class="template">' + '<audio id="help_audio" autoplay>' + '<source src="snd/_type_/_id_.mp3" type="audio/mpeg">' + '</audio>' + '</div>';
 
@@ -105,7 +113,7 @@ PROMPT_DELAY = 0;
 PROMPT_DELAY_INC = 2499;
 MAX_PROMPT_DELAY = 5000;
 PROMPT_REPEAT_DELAY = 10000;
-INSTRUCTION_DELAY = 2000;
+INSTRUCTION_DELAY = 1000;
 INSTRUCTION_QUEUE=['WELCOME', 'INSTRUCTION_0', 'INSTRUCTION_1', 'INSTRUCTION_2', 'INSTRUCTION_3', 'INSTRUCTION_4', 'INSTRUCTION_5'];
 
 var index;
@@ -831,6 +839,7 @@ function prompt(id, onSuccess, onError, onStatus) {
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
 
+        $("#game_button p").css(gb_css).text("Start");
         $("#game_button").one("click", function (){ app.doStart();}).show();
         app.state.current = app.state.WAIT_FOR_START;
         instructions.start(function() {app.doStart();});
@@ -838,7 +847,9 @@ function prompt(id, onSuccess, onError, onStatus) {
 
       doStart: function() {
         instructions.stop();
-        $("#game_button").text("Show").one("click", function (){ app.doShow();});
+        $("#game_button p").css(gb_css).text("Show");
+        $("#game_button").css("background-color",PARTNER_COLOR[app.readerTurn]).show().one("click", function (){ app.doShow();});
+
         app.state.current = app.state.WAIT_FOR_SHOW;
         pv_PICK_UP_TABLET = new prompt(p_PICK_UP_TABLET, null, null);
         pv_PICK_UP_TABLET.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
@@ -846,7 +857,8 @@ function prompt(id, onSuccess, onError, onStatus) {
 
       doShow: function() {
         pv_PICK_UP_TABLET.stop();
-        $("#game_button").off("click").text("Hide").one("click", function (){ app.doHide();});
+        $("#game_button").off("click").one("click", function (){ app.doHide();});
+        $("#game_button p").css(gb_css).text("Hide");
         pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
         pv_READ_THE_WORD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY); 
         app.cardReader[app.readerTurn].nextStimulus();
@@ -855,7 +867,7 @@ function prompt(id, onSuccess, onError, onStatus) {
       },
 
       doHide: function() {
-        $("#game_button").off("click").text("Show").hide();
+        $("#game_button").off("click").hide();
         $("#stimulus #word").css({opacity:1.0});
         app.cardReader[app.readerTurn].nextReveal();
 
@@ -891,6 +903,7 @@ function prompt(id, onSuccess, onError, onStatus) {
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_START;
 //        app.cardReader[app.readerTurn].nextStimulus();
+        app.doStart();
 
       }
 

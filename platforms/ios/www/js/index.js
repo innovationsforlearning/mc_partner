@@ -17,8 +17,8 @@
  * under the License.
  */
  // if in development skip cordova initialization/deviceready event handling
-var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-if(false){
+ var isDesktop = navigator.platform == 'MacIntel';
+if(isDesktop){
   //window.location.assign("partnerstation.html")
   var cordova_app = {
      // Application Constructor
@@ -57,14 +57,6 @@ var cordova_app = {
     receivedEvent: function(id) {
        
         console.log('Received Event: ' + id);
-
-        navigator.notification.alert(
-            'index.js',  // message
-            function () {},         // callback
-            'id:'+id,            // title
-            'Done'                  // buttonName
-        );
-
 
         switch(id) {
             case 'resume':
