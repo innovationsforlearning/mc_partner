@@ -226,7 +226,7 @@ body {
     background: -webkit-image-set(url(../img/HelpButton.png) 1x,
                                          url(../img/HelpButton_2x.png) 2x);
 }
-.game_button {
+#game_button {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -234,14 +234,12 @@ body {
     height:74px;
     border-radius: 37px;
     z-index: 1;
-}
-#start {
     background-color: #0F0;
 }
-#start p {
+
+#game_button p {
     position: absolute;
     top:10%;
-
 }
 .student_name_box {
     display: none;

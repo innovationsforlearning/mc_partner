@@ -142,9 +142,10 @@ var instructions = {
   },
 
   startNext: function (){
-    if((this.index >= this.queue.length)|| this.action=='stop'){
+    if((this.index >= this.queue.length)||this.action=='stop'){
       this.media.release();
-      this.finalCallback();
+      if(this.action!='stop')
+        this.finalCallback();
       return;
     }
 
@@ -830,14 +831,40 @@ function prompt(id, onSuccess, onError, onStatus) {
 
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
 
-        $("#start.game_button").one("click", function (){ app.doStart();}).show();
+        $("#game_button").one("click", function (){ app.doStart();}).show();
         app.state.current = app.state.WAIT_FOR_START;
-        instructions.start(function() {app.nextReader();});
+        instructions.start(function() {app.doStart();});
       },
 
       doStart: function() {
-        $("#start.game_button").hide();
         instructions.stop();
+        $("#game_button").text("Show").one("click", function (){ app.doShow();});
+        app.state.current = app.state.WAIT_FOR_SHOW;
+        pv_PICK_UP_TABLET = new prompt(p_PICK_UP_TABLET, null, null);
+        pv_PICK_UP_TABLET.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
+      },
+
+      doShow: function() {
+        pv_PICK_UP_TABLET.stop();
+        $("#game_button").off("click").text("Hide").one("click", function (){ app.doHide();});
+        pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
+        pv_READ_THE_WORD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY); 
+        app.cardReader[app.readerTurn].nextStimulus();
+
+
+      },
+
+      doHide: function() {
+        $("#game_button").off("click").text("Show").hide();
+        $("#stimulus #word").css({opacity:1.0});
+        app.cardReader[app.readerTurn].nextReveal();
+
+        pv_READ_THE_WORD.stop(function () {
+          pv_TAP_ANSWER = new prompt(p_TAP_ANSWER, null, null);
+          pv_TAP_ANSWER.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
+
+        }, 500);
+
       },
 
       incorrect_words: function (target, source){
@@ -863,11 +890,8 @@ function prompt(id, onSuccess, onError, onStatus) {
         $(card_reader_name[this.readerTurn]).toggleClass("student_highlight");
         $("#score_label").text(this.cardReader[this.readerTurn].score);
         app.state.current = app.state.WAIT_FOR_START;
-        app.cardReader[app.readerTurn].nextStimulus();
-        pv_PICK_UP_TABLET = new prompt(p_PICK_UP_TABLET, null, null);
-        pv_PICK_UP_TABLET.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
+//        app.cardReader[app.readerTurn].nextStimulus();
 
-        // this.cardReader[this.readerTurn].nextStimulus();
       }
 
 /* POC remove teacsherReview
@@ -930,62 +954,20 @@ function reader(user) {
 
     this.nextStimulus = function () {
       doStage[stage].display();
+      $("#stimulus #word").css({opacity:1.0});
+      /*
       if (isDesktop){
         $("#stimulus #word").css({opacity:1.0});
        $("div.stage").one("click",function (event){
           pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
           doStage[stage].reveal();
-          //app.cardReader[app.readerTurn].reveal();
         });
-      }else{
-        var options={frequency: 500 };
-        if(accelerometer.watchID === null){
-          accelerometer.start(
-          function (acceleration) {
-            /* success */
-            if(accelerometer.watchID){
-              switch (app.state.current) {
-                case app.state.WAIT_FOR_DEVICE_VERTICAL:
-                if( Math.abs(acceleration.x) > 9){
-                  $("#stimulus #word").css({opacity:1.0});
-
-
-                  app.state.current = app.state.WAIT_FOR_DEVICE_FLAT;
-                  // let media system complete the stop before beginning the next audio
-                  pv_PICK_UP_IPAD.stop(function () {
-                    pv_READ_THE_WORD = new prompt(p_READ_THE_WORD, null, null);
-                    pv_READ_THE_WORD.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);                    
-                  }, 50);
-
-                }
-                break;
-                case app.state.WAIT_FOR_DEVICE_FLAT:
-                if( Math.abs(acceleration.z) > 7){
-                  app.state.current = app.state.WAIT_FOR_ANSWER;
-                  accelerometer.stop();
-                  doStage[stage].reveal();
-
-                  pv_READ_THE_WORD.stop(function () {
-                    pv_SELECT_STIMULUS = new prompt(p_SELECT_STIMULUS[app.readerTurn], null, null);
-                    pv_SELECT_STIMULUS.start(PROMPT_DELAY, PROMPT_REPEAT_DELAY);
-
-                  }, 500);
-
-                  
-                }
-                break;
-                default:
-                break;
-              }
-            }
-          }, 
-          function () {
-            /*failure */
-          },
-          options
-          );
-        }       
       }
+      */
+    };
+
+    this.nextReveal = function () {
+      doStage[stage].reveal();
     };
 
     this.isStimCorrect = function (stim){
@@ -1023,14 +1005,14 @@ function reader(user) {
           initStimuli();
         }
         //this.fadeIncorrect(doStage[stage].feedback);
-        pv_SELECT_STIMULUS.stop();
+        pv_TAP_ANSWER.stop();
         var snd=sfx_correct[Math.floor(Math.random()*sfx_correct.length)];
         this.fadeIncorrect(function () {
-          pv_CORRECT_SELECTION=new prompt(snd,
+          pv_RIGHT_ANSWER=new prompt(snd,
             function () {
               doStage[stage].feedback();
             });
-          pv_CORRECT_SELECTION.start();
+          pv_RIGHT_ANSWER.start();
         });
       };
 
@@ -1054,14 +1036,14 @@ function reader(user) {
         this.feedbackQueue.push({stimulus:stimuli[0], selector:".correct"});
         this.feedbackQueue.push({stimulus:{word:incorrectStimulus, type:stimuli[0].type}, selector:".selected"});
         //this.fadeIncorrect(doStage[stage].feedback);
-        pv_SELECT_STIMULUS.stop();
+        pv_TAP_ANSWER.stop();
 
         this.fadeIncorrect(function () {
-          pv_CORRECT_STIMULUS = new prompt(p_CORRECT_STIMULUS, 
+          pv_RIGHT_ANSWER = new prompt(p_RIGHT_ANSWER, 
             function () {
               doStage[stage].feedback();
             });
-          pv_CORRECT_STIMULUS.start();
+          pv_RIGHT_ANSWER.start();
         });
 
 
@@ -1474,11 +1456,11 @@ function reader(user) {
           reader.feedbackQueue.shift();
 
           //pv_CORRECT_STIMULUS.stop();
-          pv_INCORRECT_SELECTION = new prompt(p_INCORRECT_SELECTION,
+          pv_WRONG_ANSWER = new prompt(p_WRONG_ANSWER,
             function () {doStage[stage].feedback();});
 
           // allow audio system to settle before starting the next audio
-          setTimeout(function () { pv_INCORRECT_SELECTION.start(); }, 1000);         
+          setTimeout(function () { pv_WRONG_ANSWER.start(); }, 1000);         
 
         }else{
           // if both partners have had a turn
